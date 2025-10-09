@@ -1,0 +1,67 @@
+{% extends 'propiedades/base.html' %} 
+
+{% block title %}{{ propiedad.direccion }} - Detalle{% endblock title %}
+
+{% block content %}
+<div class="detalle-container">
+    
+    <main class="detalle-principal">
+        <header class="detalle-header">
+            <h1 class="propiedad-titulo">{{ propiedad.direccion }}</h1>
+            <p class="propiedad-precio">{{ propiedad.precio|floatformat:0 }} USD</p>
+        </header>
+
+        <section class="detalle-galeria">
+            <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}/static/img/placeholder_large.jpg{% endif %}" alt="Imagen principal de {{ propiedad.direccion }}" class="imagen-principal">
+            {% if propiedad.destacado %}
+                <span class="detalle-etiqueta-destacada">PROPIEDAD DESTACADA</span>
+            {% endif %}
+        </section>
+
+        <section class="detalle-ficha">
+            <div class="ficha-item"><span class="icon">🛌</span> **Dormitorios:** {{ propiedad.dormitorios }}</div>
+            <div class="ficha-item"><span class="icon">🚿</span> **Baños:** {{ propiedad.banos }}</div>
+            <div class="ficha-item"><span class="icon">📐</span> **M²:** {{ propiedad.metros_cuadrados }}</div>
+            <div class="ficha-item"><span class="icon">🏷️</span> **Tipo:** {{ propiedad.get_tipo_propiedad_display }}</div>
+            <div class="ficha-item"><span class="icon">📍</span> **Estado:** {{ propiedad.get_estado_display }}</div>
+            <div class="ficha-item"><span class="icon">📅</span> **Publicado:** {{ propiedad.fecha_publicacion|date:"d/m/Y" }}</div>
+        </section>
+
+        <section class="detalle-descripcion">
+            <h2>Descripción</h2>
+            <p>{{ propiedad.descripcion|linebreaks }}</p>
+        </section>
+        
+        <section class="detalle-amenidades">
+            <h2>Amenidades</h2>
+            <ul class="lista-amenidades">
+                {% for amenity in propiedad.amenidades|default_if_none:""|split:"," %}
+                    {% if amenity|length > 0 %}
+                        <li><span class="icon">✅</span> {{ amenity|strip }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+        
+    </main>
+
+    <aside class="detalle-contacto">
+        <div class="contacto-box">
+            <h3>Contacta al Agente</h3>
+            <p>Solicita más información sobre esta propiedad.</p>
+            
+            <form action="#" method="POST"> 
+                {% csrf_token %}
+                <input type="text" placeholder="Tu Nombre" required>
+                <input type="email" placeholder="Tu Email" required>
+                <textarea placeholder="Mensaje..." rows="4"></textarea>
+                
+                <button type="submit" class="btn-contacto-principal">QUIERO MÁS INFO</button>
+            </form>
+            
+            <p class="contacto-info">O llama al: (555) 123-4567</p>
+        </div>
+    </aside>
+
+</div>
+{% endblock content %}

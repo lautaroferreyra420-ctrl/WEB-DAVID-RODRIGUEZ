@@ -1,0 +1,114 @@
+{% extends 'propiedades/base.html' %} 
+
+{% block title %}Resultados de Búsqueda{% endblock title %}
+
+{% block content %}
+    
+    <form method="GET" action="{% url 'lista_propiedades' %}">
+        <div class="main-container"> 
+            
+            <aside id="filtro-lateral">
+                <h2>Filtros Avanzados</h2>
+
+                <section class="filtro-grupo">
+                    <h3>Ubicación</h3>
+                    <input type="text" 
+                           placeholder="Barrio, Ciudad o Código Postal" 
+                           name="ubicacion_texto" 
+                           id="filtro-ubicacion" 
+                           value="{{ request.GET.ubicacion_texto|default:'' }}">
+                </section>
+
+                <section class="filtro-grupo">
+                    <h3>Tipo de Operación</h3>
+                    <div class="opciones-toggle" id="filtro-transaccion">
+                        {% with estado_actual=request.GET.estado|default:'' %}
+                            <button type="submit" 
+                                    name="estado" 
+                                    value="Venta" 
+                                    class="toggle-btn {% if estado_actual == 'Venta' or estado_actual == '' %}activo{% endif %}">
+                                Comprar
+                            </button>
+                            <button type="submit" 
+                                    name="estado" 
+                                    value="Alquiler" 
+                                    class="toggle-btn {% if estado_actual == 'Alquiler' %}activo{% endif %}">
+                                Alquilar
+                            </button>
+                        {% endwith %}
+                    </div>
+                </section>
+                
+                <section class="filtro-grupo">
+                    <h3>Tipo de Propiedad</h3>
+                    <div class="opciones-checkbox" id="filtro-tipo">
+                        {% for valor, etiqueta in propiedad.OPCIONES_TIPO %}
+                            <label>
+                                <input type="checkbox" 
+                                       name="tipo_propiedad" 
+                                       value="{{ valor }}" 
+                                       {% if valor in request.GET.tipo_propiedad %}checked{% endif %}> 
+                                {{ etiqueta }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="filtro-grupo">
+                    <h3>Precio Mínimo y Máximo (USD)</h3>
+                    <div class="range-inputs">
+                        <input type="number" name="precio_min" placeholder="Mínimo" value="{{ request.GET.precio_min|default:'' }}">
+                        <input type="number" name="precio_max" placeholder="Máximo" value="{{ request.GET.precio_max|default:'' }}">
+                    </div>
+                </section>
+                
+                <section class="filtro-grupo">
+                    <h3>M² Mínimos</h3>
+                    <input type="number" name="metros_cuadrados_min" 
+                           placeholder="M² Mínimos" 
+                           value="{{ request.GET.metros_cuadrados_min|default:'' }}">
+                </section>
+                
+                <button type="submit" id="btn-aplicar-filtro">Aplicar Filtros</button>
+                
+            </aside>
+
+            <main id="area-resultados">
+                <h2>{{ titulo }}</h2>
+                <p class="conteo-resultados">Hemos encontrado **{{ propiedades|length }}** inmuebles disponibles.</p>
+                
+                {% for propiedad in propiedades %}
+                <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}">
+                    
+                    <div class="card-imagen">
+                        <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}/static/img/placeholder.jpg{% endif %}" 
+                             alt="Foto de {{ propiedad.direccion }}">
+                        
+                        {% if propiedad.destacado %}
+                            <span class="etiqueta-destacada">DESTACADO</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-detalles">
+                        <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
+                        <p class="card-precio">{{ propiedad.precio|floatformat:0 }} USD</p> 
+                        
+                        <div class="card-specs">
+                            <div><span class="icon">🛌</span> {{ propiedad.dormitorios }} Dorms</div>
+                            <div><span class="icon">🚿</span> {{ propiedad.banos }} Baños</div>
+                            <div><span class="icon">📐</span> {{ propiedad.metros_cuadrados }} m²</div>
+                        </div>
+                        
+                        <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-ver-mas">Ver Detalles</a>
+                    </div>
+                </article>
+                {% empty %}
+                    <p class="no-resultados">Lo sentimos, no encontramos propiedades con esos criterios de búsqueda. Intenta con menos filtros.</p>
+                {% endfor %}
+                
+            </main>
+
+        </div>
+    </form>
+    
+{% endblock content %}

@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock title %}</title>
+    </head>
+<body>
+    <header>
+        <h1>[LOGO] David Rodriguez Inmobiliaria</h1>
+        <nav>
+            <a href="/">Inicio</a> | 
+            <a href="/admin">Administración</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 David Rodriguez. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
