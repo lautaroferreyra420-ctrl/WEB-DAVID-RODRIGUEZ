@@ -1,80 +1,104 @@
 {% extends 'propiedades/base.html' %} 
+{% load static %}
 
-{% block title %}Resultados de Búsqueda{% endblock title %}
+{% block title %}{{ titulo_seo }} - David Rodriguez Inmobiliaria{% endblock title %}
 
 {% block content %}
     
-    <form method="GET" action="{% url 'lista_propiedades' %}">
-        <div class="main-container"> 
-            
-            <aside id="filtro-lateral">
-                <h2>Filtros Avanzados</h2>
-
-                <section class="filtro-grupo">
-                    <h3>Ubicación</h3>
-                    <input type="text" 
-                           placeholder="Barrio, Ciudad o Código Postal" 
-                           name="ubicacion_texto" 
-                           id="filtro-ubicacion" 
-                           value="{{ request.GET.ubicacion_texto|default:'' }}">
-                </section>
-
-                <section class="filtro-grupo">
-                    <h3>Tipo de Operación</h3>
+    <form method="GET" action="{% url 'inicio' %}">
+        
+        <!-- 1. Nueva Barra de Filtros Horizontal -->
+        <div class="filter-bar-container">
+            <section id="filter-bar">
+                <div class="filtro-grupo">
+                <label for="filtro-ubicacion">Ubicación</label>
+                <input type="text" 
+                       placeholder="Barrio, Ciudad..." 
+                       name="ubicacion_texto" 
+                       id="filtro-ubicacion" 
+                       value="{{ request.GET.ubicacion_texto|default:'' }}">
+            </div>
+    
+                <div class="filtro-grupo">
+                    <label>Operación</label>
                     <div class="opciones-toggle" id="filtro-transaccion">
+                        <!-- Campo oculto para guardar el valor seleccionado -->
+                        <input type="hidden" name="estado" id="input-estado" value="{{ request.GET.estado|default:'Venta' }}">
+                        
                         {% with estado_actual=request.GET.estado|default:'' %}
-                            <button type="submit" 
-                                    name="estado" 
-                                    value="Venta" 
-                                    class="toggle-btn {% if estado_actual == 'Venta' or estado_actual == '' %}activo{% endif %}">
+                            <button type="button" data-value="Venta" 
+                                    class="toggle-btn {% if estado_actual == 'Venta' or not estado_actual %}activo{% endif %}">
                                 Comprar
                             </button>
-                            <button type="submit" 
-                                    name="estado" 
-                                    value="Alquiler" 
+                            <button type="button" data-value="Alquiler" 
                                     class="toggle-btn {% if estado_actual == 'Alquiler' %}activo{% endif %}">
                                 Alquilar
                             </button>
+                            <button type="button" data-value="Permuta" 
+                                    class="toggle-btn {% if estado_actual == 'Permuta' %}activo{% endif %}">
+                                Permuta
+                            </button>
                         {% endwith %}
                     </div>
-                </section>
+                </div>
                 
-                <section class="filtro-grupo">
-                    <h3>Tipo de Propiedad</h3>
-                    <div class="opciones-checkbox" id="filtro-tipo">
-                        {% for valor, etiqueta in propiedad.OPCIONES_TIPO %}
-                            <label>
-                                <input type="checkbox" 
-                                       name="tipo_propiedad" 
-                                       value="{{ valor }}" 
-                                       {% if valor in request.GET.tipo_propiedad %}checked{% endif %}> 
+                <div class="filtro-grupo">
+                    <label for="filtro-tipo">Tipo de Propiedad</label>
+                    <select name="tipo_propiedad" id="filtro-tipo">
+                        <option value="">Cualquiera</option>
+                        {% for valor, etiqueta in Propiedad.OPCIONES_TIPO %}
+                            <option value="{{ valor }}" {% if valor == request.GET.tipo_propiedad %}selected{% endif %}>
                                 {{ etiqueta }}
-                            </label>
+                            </option>
                         {% endfor %}
-                    </div>
-                </section>
-
-                <section class="filtro-grupo">
-                    <h3>Precio Mínimo y Máximo (USD)</h3>
+                    </select>
+                </div>
+    
+                <div class="filtro-grupo">
+                    <label>$ / USD</label>
                     <div class="range-inputs">
                         <input type="number" name="precio_min" placeholder="Mínimo" value="{{ request.GET.precio_min|default:'' }}">
                         <input type="number" name="precio_max" placeholder="Máximo" value="{{ request.GET.precio_max|default:'' }}">
                     </div>
-                </section>
+                </div>
                 
-                <section class="filtro-grupo">
-                    <h3>M² Mínimos</h3>
-                    <input type="number" name="metros_cuadrados_min" 
-                           placeholder="M² Mínimos" 
+                <div class="filtro-grupo">
+                    <label for="metros_cuadrados_min">M²</label>
+                    <input type="number" name="metros_cuadrados_min" id="metros_cuadrados_min"
+                           placeholder="Ej: 50" 
                            value="{{ request.GET.metros_cuadrados_min|default:'' }}">
-                </section>
+                </div>
                 
-                <button type="submit" id="btn-aplicar-filtro">Aplicar Filtros</button>
-                
-            </aside>
+                <button type="submit" id="btn-aplicar-filtro" title="Buscar propiedades">
+                    <img src="{% static 'img/boton_busqueda.svg' %}" alt="Buscar" class="search-svg-icon">
+                </button>
+            </section>
+        </div>
 
+        <!-- 2. Área de Resultados -->
+        
+        {% comment %} Script para manejar el toggle de operación {% endcomment %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButtons = document.querySelectorAll('#filtro-transaccion .toggle-btn');
+                const estadoInput = document.getElementById('input-estado');
+        
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Actualiza el valor del input oculto
+                        estadoInput.value = this.dataset.value;
+        
+                        // Actualiza la clase 'activo'
+                        toggleButtons.forEach(btn => btn.classList.remove('activo'));
+                        this.classList.add('activo');
+                    });
+                });
+            });
+        </script>
+
+        <div class="main-container"> 
             <main id="area-resultados">
-                <h2>{{ titulo }}</h2>
+                <h2>{{ titulo_seo }}</h2>
                 <p class="conteo-resultados">Hemos encontrado **{{ propiedades|length }}** inmuebles disponibles.</p>
                 
                 {% for propiedad in propiedades %}

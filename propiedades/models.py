@@ -9,7 +9,8 @@ class Propiedad(models.Model):
     # OPCIONES DE TRANSACCIÓN (Usamos valores cortos y limpios para la lógica de búsqueda)
     OPCIONES_ESTADO = [
         ('Venta', 'En Venta'),
-        ('Alquiler', 'En Alquiler'), # MODIFICADO: Cambiamos 'Alq' por 'Alquiler' para claridad
+        ('Alquiler', 'En Alquiler'),
+        ('Permuta', 'Permuta'),
     ]
 
     # OPCIONES DE TIPO DE PROPIEDAD (Usamos valores limpios para la lógica de búsqueda)

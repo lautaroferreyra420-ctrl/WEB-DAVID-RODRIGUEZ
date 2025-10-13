@@ -1,19 +1,94 @@
+/* Importamos la fuente Poppins desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
 /* VARIABLES DE COLOR - PALETA DAVID RODRIGUEZ PROPIEDADES */
 :root {
     --color-blanco: #ffffff;
-    --color-negro: #1a1a1a;
+    --color-negro: #1a1a1a; 
     --color-rojo-acento: #ff0000; /* Rojo vivo para el acento sutil */
     --color-gris-claro: #f0f0f0;
+    --color-gris-oscuro-transparente: rgba(26, 26, 26, 0.5); /* Para la superposición */
     --color-gris-medio: #999999;
 }
 
-/* BASE: Quitamos el código naranja de prueba */
+/* BASE */
 body {
-    background-color: var(--color-gris-claro); /* Fondo base muy claro */
-    font-family: Arial, sans-serif;
+    background-color: transparent;
+    font-family: 'Poppins', sans-serif; /* Aplicamos la nueva fuente a toda la web */
     margin: 0;
     padding: 0;
     color: var(--color-negro);
+}
+
+/* ---------------------------------------------------------------- */
+/* FONDO DINÁMICO Y SUPERPOSICIÓN */
+/* ---------------------------------------------------------------- */
+.background-swiper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* Ocupa toda la ventana */
+    z-index: -2; /* Detrás de todo */
+}
+
+.background-swiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cubre el área sin deformarse */
+}
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--color-gris-oscuro-transparente);
+    z-index: -1; /* Entre el fondo y el contenido */
+}
+
+/* ---------------------------------------------------------------- */
+/* HEADER CON BANNER ESTÁTICO */
+/* ---------------------------------------------------------------- */
+
+header {
+    width: 100%;
+    background-color: var(--color-negro); /* Fondo mientras carga la imagen */
+    line-height: 0; /* Evita espacios extra */
+    position: relative; /* Para que esté sobre el fondo */
+}
+
+.header-banner {
+    width: 100%;
+    height: auto;
+}
+
+/* ---------------------------------------------------------------- */
+/* BARRA DE NAVEGACIÓN PRINCIPAL */
+/* ---------------------------------------------------------------- */
+.main-nav-container {
+    /* Posicionamos el menú en la esquina superior derecha del header */
+    position: absolute;
+    top: 15px; /* Espacio desde arriba */
+    right: 5%; /* Espacio desde la derecha */
+    z-index: 5; /* Por encima del banner pero debajo de otros elementos si es necesario */
+    background-color: transparent; /* Sin fondo */
+    padding: 0;
+    width: auto; /* El ancho se ajusta al contenido */
+}
+
+.header-logo {
+    height: 60px; /* Controla la altura de tu logo */
+    width: auto;
+}
+
+nav a {
+    color: var(--color-blanco); /* Texto blanco para que se vea sobre el banner */
+    font-weight: bold;
+    margin: 0 10px;
+    text-decoration: none;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Sombra para mejorar la legibilidad */
 }
 
 /* ESTILOS DE COMPONENTES GENERALES */
@@ -23,357 +98,390 @@ h1, h2, h3 {
 
 /* Contenedor principal para la lista/buscador */
 .main-container {
-    display: flex; 
+    position: relative;
     max-width: 1200px; 
-    margin: 0 auto;
+    margin: 20px auto; /* Añadimos un margen superior */
     gap: 30px; 
     padding: 30px 0;
 }
 
-
-/* ---------------------------------------------------------------- */
-/* 1. BARRA LATERAL DE FILTROS (filtro-lateral) */
-/* ---------------------------------------------------------------- */
-
-#filtro-lateral {
-    width: 300px;
-    padding: 20px;
+/* Aseguramos que las tarjetas de propiedades tengan fondo */
+.propiedad-card {
     background-color: var(--color-blanco);
-    border-right: 1px solid var(--color-gris-claro);
+    /* ... otros estilos de la tarjeta ... */
+}
+
+/* Hacemos que el contenedor principal sea transparente por defecto */
+main {
+    background-color: transparent;
+}
+
+
+/* ---------------------------------------------------------------- */
+/* COMPONENTE: CAJA DE CONTENIDO TRANSPARENTE (REUTILIZABLE) */
+/* ---------------------------------------------------------------- */
+.content-box-transparent {
+    position: relative; /* Necesario para que el z-index funcione */
+    z-index: 2; /* Asegura que esté por encima del fondo */
+    /* Efecto "vidrio esmerilado" para la transparencia */
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px; /* Bordes ligeramente redondeados para un look más suave */
+    padding: 30px;
+    max-width: 800px; /* Ancho máximo para el contenido de contacto */
+    margin: 40px auto; /* Centrado y con espacio vertical */
+    color: var(--color-negro); /* CAMBIO: Texto negro para máxima legibilidad */
+    /* text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); Quitamos la sombra, ya no es necesaria */
+}
+
+/* NUEVO: Layout para la página de contacto con formulario */
+.contact-page-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+    gap: 40px; /* Espacio entre las columnas */
+    max-width: 1100px; /* Hacemos la caja un poco más ancha */
+}
+
+/* NUEVO: Estilos para la lista de contacto con iconos */
+.contact-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre los items de contacto */
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1em;
+}
+
+.contact-item svg {
+    margin-right: 15px; /* Espacio entre el icono y el texto */
+    fill: var(--color-negro); /* CAMBIO: Usamos fill para los logos */
+    transition: fill 0.2s ease; /* Transición suave para el color de relleno */
+}
+
+/* Ajustamos el color de los enlaces dentro de la lista de contacto */
+.contact-item a {
     color: var(--color-negro);
-    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);  Se puede añadir una sombra sutil */
-    height: fit-content; /* Para que no se estire más allá del contenido */
-    border-radius: 8px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+/* NUEVO: Efecto hover para los enlaces de contacto */
+.contact-item a:hover {
+    color: var(--color-rojo-acento); /* Cambia de color al pasar el mouse */
+}
+
+/* NUEVO: Hacemos que el icono también cambie de color en hover */
+.contact-item a:hover svg {
+    fill: var(--color-rojo-acento);
+}
+
+/* NUEVO: Estilos para el formulario de contacto */
+/* Contenedor para cada campo del formulario y su error */
+.form-field-wrapper {
+    margin-bottom: 15px;
+    position: relative; /* Para posicionar errores si fuera necesario */
+}
+
+.contact-form label {
+    display: none; /* Ocultamos las etiquetas, los placeholders son suficientes */
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: var(--color-blanco);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: var(--color-blanco);
+}
+
+.btn-submit-contact {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-blanco);
+    color: var(--color-negro);
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn-submit-contact:hover {
+    background-color: var(--color-gris-claro);
+}
+
+.success-message {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+/* NUEVO: Estilo para los mensajes de error del formulario */
+.form-error {
+    color: var(--color-rojo-acento);
+    font-size: 0.9em;
+    font-weight: 500;
+    margin-top: 5px;
+    text-shadow: none; /* Quitamos la sombra de texto para que el rojo sea nítido */
+}
+
+/* NUEVO: Estilos para el contenedor del mapa (ahora integrado) */
+.map-container {
+    margin-top: 30px; /* Espacio sobre el mapa */
+    width: 100%;
+}
+
+.map-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--color-negro); /* Texto negro para que se lea bien */
+    text-align: left;
+}
+
+.map-responsive {
+    overflow: hidden;
+    padding-bottom: 75%; /* Hacemos el mapa un poco más alto (4:3) */
+    position: relative;
+    height: 0;
+    border-radius: 4px; /* Bordes redondeados para el mapa */
+}
+
+.map-responsive iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+/* ---------------------------------------------------------------- */
+/* 1. BARRA DE FILTROS HORIZONTAL (NUEVO) */
+/* ---------------------------------------------------------------- */
+
+/* Nuevo contenedor para centrar y posicionar la barra */
+.filter-bar-container {
+    position: sticky;
+    top: 0; /* Ahora se pega directamente en la parte superior */
+    z-index: 9; /* Un poco menos que la nav principal para que se solape correctamente */
+    padding: 20px 5%; /* Espacio superior e inferior y a los lados */
+}
+
+#filter-bar {
+    display: flex;
+    flex-wrap: wrap; /* Para que se ajuste en pantallas pequeñas */
+    align-items: flex-end; /* Alinea los elementos en la parte inferior */
+    gap: 15px;
+    padding: 15px 25px;
+    /* Los estilos de fondo y borde se mueven a .content-box-transparent, pero los aplicamos aquí también */
+    border-radius: 0; /* Bordes rectangulares */
+    max-width: 1400px; /* Ancho máximo de la barra */
+    margin: 0 auto; /* Centra la barra horizontalmente */
 }
 
 .filtro-grupo {
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--color-gris-claro);
-}
-
-.filtro-grupo h3 {
-    font-size: 1.1em;
-    margin-bottom: 10px;
-}
-
-/* Botones de Alternancia (Toggle: Comprar/Alquilar) */
-.opciones-toggle {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    flex-shrink: 0; /* Evita que los elementos se encojan */
 }
-.toggle-btn {
+
+/* Aplicamos el efecto de vidrio a la barra de filtros usando la nueva clase */
+#filter-bar {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Hacemos que el filtro de ubicación sea fluido y ocupe el espacio disponible */
+.filtro-grupo:has(#filtro-ubicacion) {
     flex-grow: 1;
-    padding: 8px 15px;
-    border: 1px solid var(--color-negro);
-    background-color: var(--color-blanco);
-    color: var(--color-negro);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-/* USO SUTIL DEL ROJO: Solo al elemento seleccionado */
-.toggle-btn.activo {
-    background-color: var(--color-rojo-acento); 
-    color: var(--color-blanco); 
-    border-color: var(--color-rojo-acento);
 }
 
-/* Checkboxes (Tipo de Propiedad) */
-.opciones-checkbox label {
-    display: block;
-    margin-bottom: 8px;
-}
-/* USO SUTIL DEL ROJO: Solo al indicador del checkbox */
-.opciones-checkbox input[type="checkbox"] {
-    accent-color: var(--color-rojo-acento);
+.filtro-grupo label {
+    font-size: 0.8em;
+    font-weight: 500; /* Un grosor medio, más moderno que 'bold' */
+    margin-bottom: 5px; /* Reducimos un poco el margen */
+    color: var(--color-negro);
+    text-transform: uppercase;
 }
 
-/* Campo de Ubicación y Rangos */
-#filtro-ubicacion, .range-inputs input {
-    width: 95%;
-    padding: 10px;
-    border: 1px solid var(--color-gris-medio);
-    color: var(--color-negro);
-    box-sizing: border-box;
+/* Estilos para inputs y selects en la barra */
+#filter-bar input[type="text"],
+#filter-bar input[type="number"],
+#filter-bar select {
+    height: 38px; /* Altura unificada */
+    padding: 0 8px;
+    background-color: transparent; /* Fondo transparente para ver la imagen */
+    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
+    border-radius: 4px;
+    font-size: 1em;
+    color: var(--color-blanco); /* Texto blanco para mejor contraste sobre el fondo */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box; /* Asegura que el padding/borde no afecte la altura total */
 }
-#filtro-ubicacion:focus, .range-inputs input:focus {
-    border-color: var(--color-rojo-acento);
+
+/* Estilo para el texto de los placeholders */
+#filter-bar ::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 1; /* Firefox necesita esto */
+}
+
+/* Efecto de foco para dar feedback al usuario */
+#filter-bar input:focus,
+#filter-bar select:focus {
     outline: none;
+    border-color: var(--color-rojo-acento);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
 }
+
 .range-inputs {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
+
 .range-inputs input {
-    width: 50%;
+    width: 80px; /* Ancho fijo para los inputs de precio */
 }
 
-
-/* BOTÓN DE ACCIÓN PRIMARIA (Conversión) */
 #btn-aplicar-filtro {
-    width: 100%;
-    padding: 15px;
-    margin-top: 20px;
-    background-color: var(--color-rojo-acento); /* **USO ESTRATÉGICO DEL ROJO** */
-    color: var(--color-blanco);
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
+    height: 38px;
+    width: 42px; /* Hacemos el botón cuadrado */
+    padding: 0;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    border-radius: 4px;
-}
-#btn-aplicar-filtro:hover {
-    background-color: #cc0000;
-}
-
-
-/* ---------------------------------------------------------------- */
-/* 2. TARJETA DE PROPIEDAD (propiedad-card) */
-/* ---------------------------------------------------------------- */
-
-/* Contenedor de Resultados (Grid) */
-#area-resultados {
-    flex-grow: 1; 
-    padding: 0;
-}
-#area-resultados h2 {
-    margin-top: 0;
-}
-
-.propiedad-card {
-    background-color: var(--color-blanco); 
-    border-radius: 8px;
-    overflow: hidden; 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
-    transition: transform 0.3s ease;
-    border: 1px solid var(--color-gris-claro);
-    margin-bottom: 20px;
-}
-
-/* Diseño de la grilla de resultados */
-#area-resultados main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-
-.propiedad-card:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Imagen y Etiqueta */
-.card-imagen {
-    position: relative;
-    height: 200px; 
-    overflow: hidden;
-}
-.card-imagen img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-}
-/* USO SUTIL Y ESTRATÉGICO DEL ROJO: Etiqueta "DESTACADO" */
-.etiqueta-destacada {
-    position: absolute;
-    top: 15px;
-    left: 0;
-    padding: 5px 10px;
-    background-color: var(--color-rojo-acento); 
-    color: var(--color-blanco);
-    font-weight: bold;
-    font-size: 0.8em;
-    z-index: 10;
-}
-
-/* Detalles */
-.card-detalles {
-    padding: 15px;
-}
-.card-ubicacion {
-    font-size: 1.2em;
-    margin: 0 0 5px 0;
-}
-.card-precio {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--color-negro); 
-    margin: 0 0 15px 0;
-}
-
-/* Especificaciones */
-.card-specs {
+    align-self: flex-end;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     display: flex;
-    justify-content: space-between;
-    font-size: 0.9em;
-    color: var(--color-gris-medio); 
-    margin-bottom: 20px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--color-gris-claro);
-}
-.card-specs .icon {
-    margin-right: 5px;
-    color: var(--color-negro); 
-}
-
-/* Botón de la Tarjeta */
-.btn-ver-mas {
-    display: block;
-    text-align: center;
-    padding: 10px;
-    background-color: var(--color-rojo-acento);
-    color: var(--color-blanco);
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-.btn-ver-mas:hover {
-    background-color: #cc0000;
-}
-
-
-/* ---------------------------------------------------------------- */
-/* 3. PÁGINA DE DETALLE (detalle_propiedad.html) */
-/* ---------------------------------------------------------------- */
-
-.detalle-container {
-    display: flex;
-    max-width: 1200px;
-    margin: 30px auto;
-    gap: 40px;
-    background-color: var(--color-blanco);
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.detalle-principal {
-    flex-grow: 1;
-    width: 70%; 
-}
-
-/* Encabezado y Precio */
-.detalle-header {
-    border-bottom: 2px solid var(--color-gris-claro);
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-}
-.propiedad-titulo {
-    font-size: 2.5em;
-    margin: 0;
-}
-.propiedad-precio {
-    font-size: 2em;
-    font-weight: bold;
-    margin: 5px 0 0 0;
-}
-
-/* Galería (Imágenes) */
-.detalle-galeria {
-    position: relative;
-    margin-bottom: 30px;
-}
-.imagen-principal {
-    width: 100%;
-    max-height: 500px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-/* USO SUTIL DEL ROJO: Etiqueta de Destacado */
-.detalle-etiqueta-destacada {
-    position: absolute;
-    top: 20px;
-    left: 0;
-    padding: 8px 15px;
-    background-color: var(--color-rojo-acento);
-    color: var(--color-blanco);
-    font-weight: bold;
-    font-size: 0.9em;
-    border-radius: 0 4px 4px 0;
-}
-
-/* Ficha de Datos Clave */
-.detalle-ficha {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 15px 0;
-    border-top: 1px solid var(--color-gris-claro);
-    border-bottom: 1px solid var(--color-gris-claro);
-    margin-bottom: 30px;
-}
-.ficha-item {
-    width: 33.33%;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-.ficha-item .icon {
-    color: var(--color-rojo-acento); /* Íconos en Rojo para destacar la ficha */
-    margin-right: 5px;
-}
-
-/* Descripción y Amenidades */
-.detalle-descripcion h2, .detalle-amenidades h2 {
-    border-bottom: 1px solid var(--color-gris-claro);
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-}
-
-.lista-amenidades {
-    list-style: none;
-    padding: 0;
-    columns: 2; 
-}
-.lista-amenidades li {
-    margin-bottom: 8px;
-}
-
-
-/* BARRA LATERAL DE CONTACTO (El corazón de la conversión) */
-.detalle-contacto {
-    width: 30%;
-}
-
-.contacto-box {
-    position: sticky; 
-    top: 20px; 
-    padding: 25px;
-    background-color: var(--color-gris-claro); 
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.contacto-box input, .contacto-box textarea {
-    width: 95%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid var(--color-gris-medio);
-    border-radius: 4px;
-    color: var(--color-negro);
+    align-items: center;
+    justify-content: center; /* Centramos el ícono */
     box-sizing: border-box;
+    flex-shrink: 0; /* Evita que se encoja */
 }
 
-/* USO ESTRATÉGICO DEL ROJO: El botón principal de conversión */
-.btn-contacto-principal {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--color-rojo-acento); 
-    color: var(--color-blanco);
-    border: none;
+/* Estilos para el ícono SVG como imagen */
+.search-svg-icon {
+    width: 22px; /* Tamaño del ícono */
+    height: 22px;
+}
+
+#btn-aplicar-filtro:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-blanco);
+}
+
+/* Estilos mejorados para los botones de Comprar/Alquilar */
+.opciones-toggle {
+    display: flex;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
     border-radius: 4px;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.btn-contacto-principal:hover {
-    background-color: #cc0000;
 }
 
-.contacto-info {
-    text-align: center;
-    margin-top: 15px;
-    font-weight: bold;
+.toggle-btn {
+    height: 36px; /* Altura unificada con los inputs */
+    padding: 0 12px;
+    border: none; /* Los botones internos no tienen borde */
+    background-color: transparent; /* Fondo transparente por defecto */
+    border-radius: 4px;
+    color: var(--color-negro); /* Texto negro */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.toggle-btn.activo {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--color-negro); /* Texto negro para el botón activo para que resalte */
+}
+
+/* ---------------------------------------------------------------- */
+/* 2. ÁREA DE RESULTADOS (MODIFICADO) */
+/* ---------------------------------------------------------------- */
+
+#area-resultados {
+    width: 100%; /* Ocupa todo el ancho disponible */
+}
+
+/* ... (el resto de tu código CSS para las tarjetas sigue igual) ... */
+
+/* ---------------------------------------------------------------- */
+/* 3. ESTILOS RESPONSIVOS (MEDIA QUERIES) */
+/* ---------------------------------------------------------------- */
+
+/* Para tablets y móviles (pantallas de hasta 768px de ancho) */
+@media (max-width: 768px) {
+
+    /* --- Barra de Filtros --- */
+    .contact-page-container {
+        grid-template-columns: 1fr; /* Apilamos las columnas en móvil */
+        gap: 30px;
+        padding: 20px;
+    }
+
+    #filter-bar {
+        flex-direction: column; /* Apilamos los filtros verticalmente */
+        align-items: stretch;   /* Hacemos que ocupen todo el ancho */
+        gap: 15px;
+    }
+
+    .range-inputs input {
+        width: 100%; /* Los inputs de precio ocupan la mitad del espacio disponible */
+    }
+
+    #btn-aplicar-filtro {
+        width: 100%; /* El botón de búsqueda ocupa todo el ancho */
+        justify-content: center; /* Centramos el texto del botón */
+    }
+
+    /* --- Tarjetas de Propiedades --- */
+    .propiedad-card {
+        flex-direction: column; /* Apilamos la imagen y los detalles verticalmente */
+    }
+
+    .card-imagen {
+        width: 100%; /* La imagen ocupa todo el ancho de la tarjeta */
+        height: 200px; /* Le damos una altura fija a la imagen en móvil */
+    }
+
+    .card-detalles {
+        width: 100%;
+        padding: 15px; /* Ajustamos el padding para móvil */
+    }
+
+    .btn-ver-mas {
+        width: 100%; /* El botón ocupa todo el ancho */
+    }
 }

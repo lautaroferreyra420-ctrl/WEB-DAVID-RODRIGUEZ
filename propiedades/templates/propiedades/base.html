@@ -2,26 +2,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock title %}</title>
-    </head>
+    <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock %}</title>
+</head>
 <body>
+    
+    <!-- 1. Capa de fondo con el carrusel -->
+    <div class="background-swiper swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.1.jpg' %}" alt="Fondo Inmobiliaria 1"></div>
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.2.jpg' %}" alt="Fondo Inmobiliaria 2"></div>
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.3.jpg' %}" alt="Fondo Inmobiliaria 3"></div>
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.4.jpg' %}" alt="Fondo Inmobiliaria 4"></div>
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.5.jpg' %}" alt="Fondo Inmobiliaria 5"></div>
+            <div class="swiper-slide"><img src="{% static 'img/carousel/carousel.6.jpg' %}" alt="Fondo Inmobiliaria 6"></div>
+        </div>
+    </div>
+    <div class="background-overlay"></div>
+
     <header>
-        <h1>[LOGO] David Rodriguez Inmobiliaria</h1>
-        <nav>
-            <a href="/">Inicio</a> | 
-            <a href="/admin">Administración</a>
-        </nav>
+        <img src="{% static 'img/Logo.png' %}" alt="Banner David Rodriguez Inmobiliaria" class="header-banner">
+        <!-- 2. Contenido principal de la página -->
+        <div class="main-nav-container">
+            <nav>
+                <a href="{% url 'inicio' %}">Inicio</a>
+                <a href="{% url 'contacto' %}">Contacto</a>
+                {% if user.is_authenticated and user.is_superuser %}
+                    | <a href="{% url 'admin:index' %}">Administración</a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
 
     <main>
         {% block content %}
-        {% endblock content %}
+        {% endblock %}
     </main>
 
     <footer>
-        <p>&copy; 2025 David Rodriguez. Todos los derechos reservados.</p>
+        <p>&copy; {% now "Y" %} David Rodriguez. Todos los derechos reservados.</p>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        const swiper = new Swiper('.background-swiper', {
+            // Configuración
+            loop: true, // Para que sea un bucle infinito
+            effect: 'fade', // Transición suave de desvanecimiento
+            fadeEffect: {
+                crossFade: true
+            },
+            autoplay: {
+                delay: 4000, // Pasa a la siguiente imagen cada 4 segundos
+                disableOnInteraction: false,
+            },
+            // No necesitamos navegación para el fondo
+        });
+    </script>
+
 </body>
 </html>
