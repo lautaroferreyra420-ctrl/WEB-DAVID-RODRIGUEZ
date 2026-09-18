@@ -42,15 +42,17 @@
     </div>
     <div class="background-overlay"></div>
 
-    <header>
-        <img src="{% static 'img/Logo.png' %}" alt="Banner David Rodriguez Inmobiliaria" class="header-banner">
+    <header id="header-principal">
+        <a href="{% url 'inicio' %}" class="header-logo-link">
+            <img src="{% static 'img/Logo.png' %}" alt="David Rodriguez Inmobiliaria" class="header-banner">
+        </a>
         <!-- 2. Contenido principal de la página -->
         <div class="main-nav-container">
             <nav>
                 <a href="{% url 'inicio' %}">Inicio</a>
                 <a href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated and user.is_superuser %}
-                    | <a href="{% url 'admin:index' %}">Administración</a>
+                    <a href="{% url 'admin:index' %}">Administración</a>
                 {% endif %}
             </nav>
         </div>
@@ -93,6 +95,18 @@
             once: true,
             offset: 80,
         });
+
+        // Achica el header suavemente al scrollear, en vez de quedar siempre estático
+        const headerPrincipal = document.getElementById('header-principal');
+        function actualizarHeader() {
+            if (window.scrollY > 40) {
+                headerPrincipal.classList.add('header-encogido');
+            } else {
+                headerPrincipal.classList.remove('header-encogido');
+            }
+        }
+        actualizarHeader();
+        window.addEventListener('scroll', actualizarHeader, { passive: true });
     </script>
 
     {% block extra_scripts %}{% endblock %}

@@ -59,45 +59,67 @@ body {
 header {
     width: 100%;
     background-color: var(--color-negro); /* Fondo mientras carga la imagen */
-    line-height: 0; /* Evita espacios extra */
     position: sticky;
     top: 0;
     z-index: 30; /* Por encima de todo lo demás */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 5%;
+    box-sizing: border-box;
+    transition: padding 0.3s ease;
+}
+
+/* Al scrollear, el header se achica: menos padding y logo más chico */
+header.header-encogido {
+    padding: 8px 5%;
+}
+
+.header-logo-link {
+    line-height: 0;
+    flex-shrink: 0;
 }
 
 .header-banner {
-    width: 100%;
-    height: auto;
+    height: 52px;
+    width: auto;
+    display: block;
+    transition: height 0.3s ease;
+}
+
+header.header-encogido .header-banner {
+    height: 36px;
 }
 
 /* ---------------------------------------------------------------- */
 /* BARRA DE NAVEGACIÓN PRINCIPAL */
 /* ---------------------------------------------------------------- */
 .main-nav-container {
-    /* Posicionamos el menú en la esquina superior derecha del header */
-    position: absolute;
-    top: 15px; /* Espacio desde arriba */
-    right: 5%; /* Espacio desde la derecha */
-    z-index: 5; /* Por encima del banner pero debajo de otros elementos si es necesario */
-    background-color: transparent; /* Sin fondo */
-    padding: 0;
-    width: auto; /* El ancho se ajusta al contenido */
+    flex-shrink: 0;
 }
 
-.header-logo {
-    height: 60px; /* Controla la altura de tu logo */
-    width: auto;
+nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
 }
 
 nav a {
-    color: var(--color-blanco); /* Texto blanco para que se vea sobre el banner */
-    font-weight: bold;
-    margin: 0 10px;
+    color: var(--color-blanco);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
     text-decoration: none;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Sombra para mejorar la legibilidad */
     position: relative;
     padding-bottom: 4px;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: rgba(255, 255, 255, 0.85);
 }
 
 nav a::after {
@@ -671,6 +693,31 @@ main {
 /* Para tablets y móviles (pantallas de hasta 768px de ancho) */
 @media (max-width: 768px) {
 
+    /* --- Header / Navbar --- */
+    header {
+        flex-wrap: wrap;
+        justify-content: center;
+        row-gap: 10px;
+        padding: 12px 6%;
+    }
+
+    .header-banner {
+        height: 40px;
+    }
+
+    header.header-encogido .header-banner {
+        height: 32px;
+    }
+
+    nav {
+        gap: 18px;
+    }
+
+    nav a {
+        font-size: 0.75rem;
+        letter-spacing: 0.8px;
+    }
+
     /* --- Barra de Filtros --- */
     .contact-page-container {
         grid-template-columns: 1fr; /* Apilamos las columnas en móvil */
@@ -892,12 +939,15 @@ main {
 
 .detalle-header {
     border-bottom: 1px solid var(--color-gris-claro);
-    padding-bottom: 16px;
     margin-bottom: 20px;
-    /* El selector global "header" (pensado para el banner de arriba) pone line-height:0 y fondo negro; los restauramos acá */
+    /* El selector global "header" (pensado para la navbar de arriba) es flex, sticky y con fondo negro; lo reseteamos acá */
+    display: block;
+    position: static;
     line-height: normal;
     background-color: transparent;
+    box-shadow: none;
     width: auto;
+    padding: 0 0 16px;
 }
 
 .propiedad-titulo {
