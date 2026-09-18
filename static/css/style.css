@@ -337,6 +337,8 @@ main {
     height: 100%;
     border: 0;
     z-index: 1;
+    /* El mouse nunca "toca" el reproductor, así YouTube no muestra sus propios controles al hover */
+    pointer-events: none;
     animation: aparecer-preview 0.3s ease;
 }
 
