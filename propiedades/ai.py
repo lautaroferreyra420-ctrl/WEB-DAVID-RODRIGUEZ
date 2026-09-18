@@ -7,7 +7,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-MODEL = "gemini-flash-latest"
+MODEL = "gemini-flash-lite-latest"
 
 SYSTEM_PROMPT_BASE = """Sos un copywriter inmobiliario experto en español rioplatense (Argentina).
 Tu trabajo es escribir descripciones de propiedades breves, cálidas y seductoras que
