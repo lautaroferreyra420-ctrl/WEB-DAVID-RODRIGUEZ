@@ -1,0 +1,29 @@
+.btn-generar-ia {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ff0000 0%, #b30000 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.btn-generar-ia:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-generar-ia:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.ayuda-generar-ia {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    color: var(--body-quiet-color, #666);
+}

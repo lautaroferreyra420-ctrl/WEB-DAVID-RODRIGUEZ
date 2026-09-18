@@ -34,6 +34,9 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 # Número de WhatsApp para el botón de contacto directo (formato: código de país + número, sin +, sin espacios)
 WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '5491100000000')
 
+# Clave de la API de Anthropic (Claude), para generar descripciones de propiedades con IA
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
+
 
 # Application definition
 
