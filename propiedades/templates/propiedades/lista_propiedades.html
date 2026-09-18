@@ -1,47 +1,55 @@
-{% extends 'propiedades/base.html' %} 
+{% extends 'propiedades/base.html' %}
 {% load static %}
 
 {% block title %}{{ titulo_seo }} - David Rodriguez Inmobiliaria{% endblock title %}
 
 {% block content %}
-    
+
+    <section class="hero">
+        <div class="hero-contenido" data-aos="fade-up" data-aos-duration="800">
+            <span class="hero-kicker">David Rodríguez Propiedades</span>
+            <h1 class="hero-titulo">Encontrá el hogar que estás buscando</h1>
+            <p class="hero-subtitulo">Casas, departamentos y locales en venta y alquiler, seleccionados para vos.</p>
+        </div>
+    </section>
+
     <form method="GET" action="{% url 'inicio' %}">
-        
-        <!-- 1. Nueva Barra de Filtros Horizontal -->
-        <div class="filter-bar-container">
+
+        <!-- 1. Barra de Filtros: tarjeta flotante sobre el hero -->
+        <div class="filter-bar-container" data-aos="fade-up" data-aos-delay="150">
             <section id="filter-bar">
                 <div class="filtro-grupo">
                 <label for="filtro-ubicacion">Ubicación</label>
-                <input type="text" 
-                       placeholder="Barrio, Ciudad..." 
-                       name="ubicacion_texto" 
-                       id="filtro-ubicacion" 
+                <input type="text"
+                       placeholder="Barrio, Ciudad..."
+                       name="ubicacion_texto"
+                       id="filtro-ubicacion"
                        value="{{ request.GET.ubicacion_texto|default:'' }}">
             </div>
-    
+
                 <div class="filtro-grupo">
                     <label>Operación</label>
                     <div class="opciones-toggle" id="filtro-transaccion">
                         <!-- Campo oculto para guardar el valor seleccionado -->
                         <input type="hidden" name="estado" id="input-estado" value="{{ request.GET.estado|default:'Venta' }}">
-                        
+
                         {% with estado_actual=request.GET.estado|default:'' %}
-                            <button type="button" data-value="Venta" 
+                            <button type="button" data-value="Venta"
                                     class="toggle-btn {% if estado_actual == 'Venta' or not estado_actual %}activo{% endif %}">
                                 Comprar
                             </button>
-                            <button type="button" data-value="Alquiler" 
+                            <button type="button" data-value="Alquiler"
                                     class="toggle-btn {% if estado_actual == 'Alquiler' %}activo{% endif %}">
                                 Alquilar
                             </button>
-                            <button type="button" data-value="Permuta" 
+                            <button type="button" data-value="Permuta"
                                     class="toggle-btn {% if estado_actual == 'Permuta' %}activo{% endif %}">
                                 Permuta
                             </button>
                         {% endwith %}
                     </div>
                 </div>
-                
+
                 <div class="filtro-grupo">
                     <label for="filtro-tipo">Tipo de Propiedad</label>
                     <select name="tipo_propiedad" id="filtro-tipo">
@@ -53,7 +61,7 @@
                         {% endfor %}
                     </select>
                 </div>
-    
+
                 <div class="filtro-grupo">
                     <label>$ / USD</label>
                     <div class="range-inputs">
@@ -61,33 +69,33 @@
                         <input type="number" name="precio_max" placeholder="Máximo" value="{{ request.GET.precio_max|default:'' }}">
                     </div>
                 </div>
-                
+
                 <div class="filtro-grupo">
                     <label for="metros_cuadrados_min">M²</label>
                     <input type="number" name="metros_cuadrados_min" id="metros_cuadrados_min"
-                           placeholder="Ej: 50" 
+                           placeholder="Ej: 50"
                            value="{{ request.GET.metros_cuadrados_min|default:'' }}">
                 </div>
-                
+
                 <button type="submit" id="btn-aplicar-filtro" title="Buscar propiedades">
-                    <img src="{% static 'img/boton_busqueda.svg' %}" alt="Buscar" class="search-svg-icon">
+                    <img src="{% static 'img/boton_busqueda_blanco.svg' %}" alt="Buscar" class="search-svg-icon">
                 </button>
             </section>
         </div>
 
         <!-- 2. Área de Resultados -->
-        
+
         {% comment %} Script para manejar el toggle de operación {% endcomment %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const toggleButtons = document.querySelectorAll('#filtro-transaccion .toggle-btn');
                 const estadoInput = document.getElementById('input-estado');
-        
+
                 toggleButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         // Actualiza el valor del input oculto
                         estadoInput.value = this.dataset.value;
-        
+
                         // Actualiza la clase 'activo'
                         toggleButtons.forEach(btn => btn.classList.remove('activo'));
                         this.classList.add('activo');
@@ -96,39 +104,44 @@
             });
         </script>
 
-        <div class="main-container"> 
+        <div class="main-container">
             <main id="area-resultados">
-                <h2>{{ titulo_seo }}</h2>
-                <p class="conteo-resultados">Hemos encontrado **{{ total_propiedades }}** inmuebles disponibles.</p>
+                <div class="resultados-encabezado">
+                    <h2>{{ titulo_seo }}</h2>
+                    <p class="conteo-resultados">Encontramos <strong>{{ total_propiedades }}</strong> inmueble{{ total_propiedades|pluralize }} disponible{{ total_propiedades|pluralize }}.</p>
+                </div>
 
-                {% for propiedad in propiedades %}
-                <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}">
-                    
-                    <div class="card-imagen">
-                        <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}/static/img/placeholder.jpg{% endif %}" 
-                             alt="Foto de {{ propiedad.direccion }}">
-                        
-                        {% if propiedad.destacado %}
-                            <span class="etiqueta-destacada">DESTACADO</span>
-                        {% endif %}
-                    </div>
+                <div class="propiedades-grid">
+                    {% for propiedad in propiedades %}
+                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}">
 
-                    <div class="card-detalles">
-                        <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
-                        <p class="card-precio">{{ propiedad.precio|floatformat:0 }} USD</p> 
-                        
-                        <div class="card-specs">
-                            <div><span class="icon">🛌</span> {{ propiedad.dormitorios }} Dorms</div>
-                            <div><span class="icon">🚿</span> {{ propiedad.banos }} Baños</div>
-                            <div><span class="icon">📐</span> {{ propiedad.metros_cuadrados }} m²</div>
+                        <div class="card-imagen">
+                            <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}"
+                                 alt="Foto de {{ propiedad.direccion }}" loading="lazy">
+
+                            {% if propiedad.destacado %}
+                                <span class="etiqueta-destacada">Destacado</span>
+                            {% endif %}
+
+                            <span class="card-precio-tag">{{ propiedad.precio|floatformat:0 }} USD</span>
                         </div>
-                        
-                        <a href="{{ propiedad.get_absolute_url }}" class="btn-ver-mas">Ver Detalles</a>
-                    </div>
-                </article>
-                {% empty %}
-                    <p class="no-resultados">Lo sentimos, no encontramos propiedades con esos criterios de búsqueda. Intenta con menos filtros.</p>
-                {% endfor %}
+
+                        <div class="card-detalles">
+                            <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
+
+                            <div class="card-specs">
+                                <span><span class="icon">🛌</span> {{ propiedad.dormitorios }}</span>
+                                <span><span class="icon">🚿</span> {{ propiedad.banos }}</span>
+                                <span><span class="icon">📐</span> {{ propiedad.metros_cuadrados }} m²</span>
+                            </div>
+
+                            <a href="{{ propiedad.get_absolute_url }}" class="btn-ver-mas">Ver Detalles</a>
+                        </div>
+                    </article>
+                    {% empty %}
+                        <p class="no-resultados">Lo sentimos, no encontramos propiedades con esos criterios de búsqueda. Intenta con menos filtros.</p>
+                    {% endfor %}
+                </div>
 
                 {% if propiedades.has_other_pages %}
                 <nav class="paginacion" aria-label="Paginación de propiedades">
@@ -148,5 +161,5 @@
 
         </div>
     </form>
-    
+
 {% endblock content %}

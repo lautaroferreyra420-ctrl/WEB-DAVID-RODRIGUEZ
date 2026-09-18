@@ -12,6 +12,10 @@
 }
 
 /* BASE */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background-color: transparent;
     font-family: 'Poppins', sans-serif; /* Aplicamos la nueva fuente a toda la web */
@@ -44,7 +48,7 @@ body {
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: var(--color-gris-oscuro-transparente);
+    background: linear-gradient(180deg, rgba(10, 10, 12, 0.55) 0%, rgba(10, 10, 12, 0.25) 45%, rgba(10, 10, 12, 0.8) 100%);
     z-index: -1; /* Entre el fondo y el contenido */
 }
 
@@ -56,7 +60,10 @@ header {
     width: 100%;
     background-color: var(--color-negro); /* Fondo mientras carga la imagen */
     line-height: 0; /* Evita espacios extra */
-    position: relative; /* Para que esté sobre el fondo */
+    position: sticky;
+    top: 0;
+    z-index: 30; /* Por encima de todo lo demás */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .header-banner {
@@ -89,6 +96,78 @@ nav a {
     margin: 0 10px;
     text-decoration: none;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Sombra para mejorar la legibilidad */
+    position: relative;
+    padding-bottom: 4px;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-rojo-acento);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.25s ease;
+}
+
+nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* ---------------------------------------------------------------- */
+/* HERO (PORTADA DEL INICIO) */
+/* ---------------------------------------------------------------- */
+.hero {
+    position: relative;
+    z-index: 1;
+    min-height: 58vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px 120px;
+    box-sizing: border-box;
+}
+
+.hero-contenido {
+    max-width: 720px;
+}
+
+.hero-kicker {
+    display: inline-block;
+    color: var(--color-blanco);
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.hero-titulo {
+    color: var(--color-blanco);
+    font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+    line-height: 1.15;
+    font-weight: 700;
+    margin: 0 0 16px;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitulo {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    line-height: 1.6;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* ESTILOS DE COMPONENTES GENERALES */
@@ -99,21 +178,159 @@ h1, h2, h3 {
 /* Contenedor principal para la lista/buscador */
 .main-container {
     position: relative;
-    max-width: 1200px; 
+    max-width: 1200px;
     margin: 20px auto; /* Añadimos un margen superior */
-    gap: 30px; 
-    padding: 30px 0;
-}
-
-/* Aseguramos que las tarjetas de propiedades tengan fondo */
-.propiedad-card {
-    background-color: var(--color-blanco);
-    /* ... otros estilos de la tarjeta ... */
+    gap: 30px;
+    padding: 30px 20px 60px;
+    box-sizing: border-box;
 }
 
 /* Hacemos que el contenedor principal sea transparente por defecto */
 main {
     background-color: transparent;
+}
+
+/* ---------------------------------------------------------------- */
+/* ENCABEZADO DE RESULTADOS Y GRILLA DE PROPIEDADES */
+/* ---------------------------------------------------------------- */
+.resultados-encabezado {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.resultados-encabezado h2 {
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+}
+
+.conteo-resultados {
+    margin: 0;
+    color: var(--color-gris-medio);
+}
+
+.conteo-resultados strong {
+    color: var(--color-negro);
+}
+
+.propiedades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 26px;
+}
+
+.no-resultados {
+    grid-column: 1 / -1;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 14px;
+    padding: 30px;
+    text-align: center;
+    color: var(--color-gris-medio);
+}
+
+/* Tarjeta de propiedad: imagen arriba con precio/badge superpuestos, detalles abajo */
+.propiedad-card {
+    background-color: var(--color-blanco);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-destacada {
+    outline: 2px solid var(--color-rojo-acento);
+    outline-offset: -2px;
+}
+
+.card-imagen {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: var(--color-gris-claro);
+}
+
+.card-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.etiqueta-destacada {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background-color: var(--color-rojo-acento);
+    color: var(--color-blanco);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.card-precio-tag {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    background-color: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: var(--color-blanco);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 6px 14px;
+    border-radius: 10px;
+}
+
+.card-detalles {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.card-ubicacion {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.35;
+}
+
+.card-specs {
+    display: flex;
+    gap: 16px;
+    color: var(--color-gris-medio);
+    font-size: 0.9rem;
+    padding-top: 10px;
+    margin-top: auto;
+    border-top: 1px solid var(--color-gris-claro);
+}
+
+.card-specs .icon {
+    margin-right: 4px;
+}
+
+.btn-ver-mas {
+    display: block;
+    text-align: center;
+    background-color: var(--color-negro);
+    color: var(--color-blanco);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 11px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-ver-mas:hover {
+    background-color: var(--color-rojo-acento);
 }
 
 
@@ -288,9 +505,10 @@ main {
 /* Nuevo contenedor para centrar y posicionar la barra */
 .filter-bar-container {
     position: sticky;
-    top: 0; /* Ahora se pega directamente en la parte superior */
-    z-index: 9; /* Un poco menos que la nav principal para que se solape correctamente */
-    padding: 20px 5%; /* Espacio superior e inferior y a los lados */
+    top: 14px; /* Queda "flotando" a un poco del borde superior al pegarse */
+    z-index: 20;
+    padding: 0 5%;
+    margin-top: -70px; /* La hace "emerger" sobre el borde inferior del hero */
 }
 
 #filter-bar {
@@ -298,9 +516,8 @@ main {
     flex-wrap: wrap; /* Para que se ajuste en pantallas pequeñas */
     align-items: flex-end; /* Alinea los elementos en la parte inferior */
     gap: 15px;
-    padding: 15px 25px;
-    /* Los estilos de fondo y borde se mueven a .content-box-transparent, pero los aplicamos aquí también */
-    border-radius: 0; /* Bordes rectangulares */
+    padding: 22px 28px;
+    border-radius: 18px; /* Tarjeta con bordes redondeados */
     max-width: 1400px; /* Ancho máximo de la barra */
     margin: 0 auto; /* Centra la barra horizontalmente */
 }
@@ -311,12 +528,12 @@ main {
     flex-shrink: 0; /* Evita que los elementos se encojan */
 }
 
-/* Aplicamos el efecto de vidrio a la barra de filtros usando la nueva clase */
+/* Tarjeta blanca solida con relieve, en vez del "vidrio" oscuro anterior */
 #filter-bar {
-    background-color: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: var(--color-blanco);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.28), 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
 }
 
 /* Hacemos que el filtro de ubicación sea fluido y ocupe el espacio disponible */
@@ -325,31 +542,33 @@ main {
 }
 
 .filtro-grupo label {
-    font-size: 0.8em;
-    font-weight: 500; /* Un grosor medio, más moderno que 'bold' */
-    margin-bottom: 5px; /* Reducimos un poco el margen */
-    color: var(--color-negro);
+    font-size: 0.75em;
+    font-weight: 600; /* Un grosor medio, más moderno que 'bold' */
+    margin-bottom: 6px; /* Reducimos un poco el margen */
+    color: var(--color-gris-medio);
     text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 /* Estilos para inputs y selects en la barra */
 #filter-bar input[type="text"],
 #filter-bar input[type="number"],
 #filter-bar select {
-    height: 38px; /* Altura unificada */
-    padding: 0 8px;
-    background-color: transparent; /* Fondo transparente para ver la imagen */
-    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
-    border-radius: 4px;
+    height: 40px; /* Altura unificada */
+    padding: 0 10px;
+    background-color: #f6f6f8; /* Gris muy claro, contraste sobre la tarjeta blanca */
+    border: 1.5px solid transparent;
+    border-radius: 8px;
     font-size: 1em;
-    color: var(--color-blanco); /* Texto blanco para mejor contraste sobre el fondo */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+    color: var(--color-negro);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     box-sizing: border-box; /* Asegura que el padding/borde no afecte la altura total */
 }
 
 /* Estilo para el texto de los placeholders */
 #filter-bar ::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: #a1a1aa;
     opacity: 1; /* Firefox necesita esto */
 }
 
@@ -357,8 +576,9 @@ main {
 #filter-bar input:focus,
 #filter-bar select:focus {
     outline: none;
+    background-color: var(--color-blanco);
     border-color: var(--color-rojo-acento);
-    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
 }
 
 .range-inputs {
@@ -371,15 +591,15 @@ main {
 }
 
 #btn-aplicar-filtro {
-    height: 38px;
-    width: 42px; /* Hacemos el botón cuadrado */
+    height: 40px;
+    width: 46px; /* Hacemos el botón cuadrado */
     padding: 0;
-    background-color: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
-    border-radius: 4px;
+    background-color: var(--color-negro);
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     align-self: flex-end;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center; /* Centramos el ícono */
@@ -389,42 +609,49 @@ main {
 
 /* Estilos para el ícono SVG como imagen */
 .search-svg-icon {
-    width: 22px; /* Tamaño del ícono */
-    height: 22px;
+    width: 20px; /* Tamaño del ícono */
+    height: 20px;
 }
 
 #btn-aplicar-filtro:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--color-blanco);
+    background-color: var(--color-rojo-acento);
+    transform: translateY(-1px);
+}
+
+#btn-aplicar-filtro:active {
+    transform: translateY(0);
 }
 
 /* Estilos mejorados para los botones de Comprar/Alquilar */
 .opciones-toggle {
     display: flex;
-    background-color: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.4); /* Borde negro semitransparente */
-    border-radius: 4px;
+    background-color: #f6f6f8;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
 }
 
 .toggle-btn {
-    height: 36px; /* Altura unificada con los inputs */
+    height: 34px; /* Altura unificada con los inputs */
     padding: 0 12px;
     border: none; /* Los botones internos no tienen borde */
     background-color: transparent; /* Fondo transparente por defecto */
-    border-radius: 4px;
-    color: var(--color-negro); /* Texto negro */
+    border-radius: 6px;
+    color: var(--color-gris-medio); /* Texto gris por defecto */
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
     display: flex;
     align-items: center;
     box-sizing: border-box;
     font-weight: 500;
+    font-size: 0.85rem;
     text-transform: uppercase;
 }
 
 .toggle-btn.activo {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: var(--color-negro); /* Texto negro para el botón activo para que resalte */
+    background-color: var(--color-negro);
+    color: var(--color-blanco);
 }
 
 /* ---------------------------------------------------------------- */
@@ -466,23 +693,18 @@ main {
         justify-content: center; /* Centramos el texto del botón */
     }
 
-    /* --- Tarjetas de Propiedades --- */
-    .propiedad-card {
-        flex-direction: column; /* Apilamos la imagen y los detalles verticalmente */
+    /* --- Grilla de propiedades: una sola columna en móvil --- */
+    .propiedades-grid {
+        grid-template-columns: 1fr;
     }
 
-    .card-imagen {
-        width: 100%; /* La imagen ocupa todo el ancho de la tarjeta */
-        height: 200px; /* Le damos una altura fija a la imagen en móvil */
+    .filter-bar-container {
+        margin-top: -40px;
     }
 
-    .card-detalles {
-        width: 100%;
-        padding: 15px; /* Ajustamos el padding para móvil */
-    }
-
-    .btn-ver-mas {
-        width: 100%; /* El botón ocupa todo el ancho */
+    .hero {
+        min-height: 46vh;
+        padding: 40px 20px 90px;
     }
 }
 
