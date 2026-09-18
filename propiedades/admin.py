@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.http import JsonResponse
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import path, reverse
 from django.utils.html import format_html
 
 from .ai import generar_descripcion, GeneracionDescripcionError
-from .models import Propiedad, FotoPropiedad, ConsultaPropiedad
+from .models import Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA
 
 
 class FotoPropiedadInline(admin.TabularInline):
@@ -76,3 +77,21 @@ class ConsultaPropiedadAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'email', 'mensaje', 'propiedad__direccion')
     ordering = ('-fecha',)
     readonly_fields = ('propiedad', 'nombre', 'email', 'mensaje', 'fecha')
+
+
+@admin.register(ConfiguracionIA)
+class ConfiguracionIAAdmin(admin.ModelAdmin):
+    """Panel único: no se puede agregar ni borrar, solo editar las instrucciones de estilo."""
+    fields = ('instrucciones_estilo', 'actualizado')
+    readonly_fields = ('actualizado',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        # Como solo existe un registro, saltamos directo a la pantalla de edición
+        ConfiguracionIA.obtener()
+        return redirect(reverse('admin:propiedades_configuracionia_change', args=[1]))

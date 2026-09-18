@@ -16,6 +16,7 @@ class Propiedad(models.Model):
         ('Venta', 'En Venta'),
         ('Alquiler', 'En Alquiler'),
         ('Permuta', 'Permuta'),
+        ('Emprendimiento', 'Emprendimientos'),
     ]
 
     # OPCIONES DE TIPO DE PROPIEDAD (Usamos valores limpios para la lógica de búsqueda)
@@ -120,3 +121,44 @@ class ConsultaPropiedad(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.propiedad.direccion}"
+
+
+class ConfiguracionIA(models.Model):
+    """
+    Configuracion unica (singleton) con las instrucciones de estilo que se le
+    suman al prompt fijo cada vez que se genera una descripcion con IA.
+    """
+    instrucciones_estilo = models.TextField(
+        blank=True,
+        default=(
+            "No repitas el precio salvo que aporte a la narrativa. "
+            "Terminá con una frase que invite a imaginarse viviendo ahí o a dar el siguiente paso, "
+            "sin sonar a cliché publicitario."
+        ),
+        verbose_name="Instrucciones de estilo para la IA",
+        help_text=(
+            "Ej: 'Somos una inmobiliaria familiar con 20 años en Morón, mencionalo cuando quede natural. "
+            "Tono cercano, sin tecnicismos. Evitá la palabra oportunidad.' "
+            "Esto se suma a las reglas fijas (nunca inventar datos, longitud corta): no las reemplaza."
+        ),
+    )
+    actualizado = models.DateTimeField(auto_now=True, verbose_name="Última actualización")
+
+    class Meta:
+        verbose_name = "Configuración de IA"
+        verbose_name_plural = "Configuración de IA"
+
+    def __str__(self):
+        return "Configuración de IA"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def obtener(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

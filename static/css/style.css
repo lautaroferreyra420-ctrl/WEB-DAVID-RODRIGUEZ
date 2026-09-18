@@ -647,6 +647,7 @@ main {
 /* Estilos mejorados para los botones de Comprar/Alquilar */
 .opciones-toggle {
     display: flex;
+    flex-wrap: wrap;
     background-color: #f6f6f8;
     border: 1.5px solid transparent;
     border-radius: 8px;
@@ -729,6 +730,11 @@ main {
         flex-direction: column; /* Apilamos los filtros verticalmente */
         align-items: stretch;   /* Hacemos que ocupen todo el ancho */
         gap: 15px;
+    }
+
+    .toggle-btn {
+        padding: 0 8px;
+        font-size: 0.72rem;
     }
 
     .range-inputs input {

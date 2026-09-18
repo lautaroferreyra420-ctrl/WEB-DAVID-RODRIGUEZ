@@ -1,6 +1,6 @@
-anthropic==1.6.0
 asgiref==3.8.1
 Django==5.0.7
+google-genai==2.24.0
 pillow==10.4.0
 python-dotenv==1.0.1
 sqlparse==0.5.0
