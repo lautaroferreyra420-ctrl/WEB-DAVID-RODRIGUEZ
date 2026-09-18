@@ -18,3 +18,4 @@ urlpatterns = [
 # Configuración CRÍTICA para servir archivos estáticos (CSS, JS, imágenes) en MODO DESARROLLO (DEBUG=True)
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

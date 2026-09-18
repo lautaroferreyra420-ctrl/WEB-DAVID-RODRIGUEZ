@@ -24,6 +24,7 @@ class Propiedad(models.Model):
     # --- CAMPOS DE INFORMACIÓN ---
     direccion = models.CharField(max_length=200, verbose_name="Dirección")
     descripcion = models.TextField(verbose_name="Descripción detallada")
+    imagen = models.ImageField(upload_to='propiedades/', blank=True, null=True, verbose_name="Foto principal")
     
     # Campos Numéricos y Financieros
     precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio (USD)")

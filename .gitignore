@@ -1,0 +1,23 @@
+# Entorno virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Django
+db.sqlite3
+media/
+
+# Variables de entorno / secretos
+.env
+
+# Logs locales
+server_out.log
+server_err.log
+
+# Editor / SO
+.vscode/
+.idea/
+Thumbs.db
