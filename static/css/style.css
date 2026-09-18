@@ -335,8 +335,12 @@ main {
     border-top: 1px solid var(--color-gris-claro);
 }
 
-.card-specs .icon {
+.icono-svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: -3px;
     margin-right: 4px;
+    flex-shrink: 0;
 }
 
 .btn-ver-mas {

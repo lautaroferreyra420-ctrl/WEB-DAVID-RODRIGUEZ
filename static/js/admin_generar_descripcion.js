@@ -33,8 +33,16 @@
         ayuda.className = 'ayuda-generar-ia';
         ayuda.textContent = 'Completá dirección, tipo, precio y amenidades (o escribí un borrador acá abajo) y generá una descripción lista para publicar. Siempre podés editarla después.';
 
+        const botonPublicar = document.createElement('button');
+        botonPublicar.type = 'submit';
+        botonPublicar.name = '_save';
+        botonPublicar.className = 'btn-publicar-ia';
+        botonPublicar.textContent = '💾 Guardar y publicar';
+        botonPublicar.title = 'Guarda toda la propiedad con los datos actuales del formulario, sin tener que bajar hasta el final de la página.';
+
         textarea.parentNode.insertBefore(ayuda, textarea);
         textarea.parentNode.insertBefore(boton, textarea);
+        textarea.parentNode.insertBefore(botonPublicar, textarea.nextSibling);
 
         boton.addEventListener('click', function () {
             const datos = {

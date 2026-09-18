@@ -1,5 +1,5 @@
 {% extends 'propiedades/base.html' %}
-{% load static %}
+{% load static propiedades_extras %}
 
 {% block title %}{{ titulo_seo }} - David Rodriguez Inmobiliaria{% endblock title %}
 
@@ -134,9 +134,9 @@
                             <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
 
                             <div class="card-specs">
-                                <span><span class="icon">🛌</span> {{ propiedad.dormitorios }}</span>
-                                <span><span class="icon">🚿</span> {{ propiedad.banos }}</span>
-                                <span><span class="icon">📐</span> {{ propiedad.metros_cuadrados }} m²</span>
+                                <span>{% icono "cama" %} {{ propiedad.dormitorios }}</span>
+                                <span>{% icono "bano" %} {{ propiedad.banos }}</span>
+                                <span>{% icono "area" %} {{ propiedad.metros_cuadrados }} m²</span>
                             </div>
 
                             <a href="{{ propiedad.get_absolute_url }}" class="btn-ver-mas">Ver Detalles</a>

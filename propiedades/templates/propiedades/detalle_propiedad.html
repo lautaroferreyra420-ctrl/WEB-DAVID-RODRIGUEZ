@@ -63,12 +63,11 @@
         {% endif %}
 
         <section class="detalle-ficha" data-aos="fade-up">
-            <div class="ficha-item"><span class="icon">🛌</span> <strong>Dormitorios:</strong> {{ propiedad.dormitorios }}</div>
-            <div class="ficha-item"><span class="icon">🚿</span> <strong>Baños:</strong> {{ propiedad.banos }}</div>
-            <div class="ficha-item"><span class="icon">📐</span> <strong>M²:</strong> {{ propiedad.metros_cuadrados }}</div>
-            <div class="ficha-item"><span class="icon">🏷️</span> <strong>Tipo:</strong> {{ propiedad.get_tipo_propiedad_display }}</div>
-            <div class="ficha-item"><span class="icon">📍</span> <strong>Estado:</strong> {{ propiedad.get_estado_display }}</div>
-            <div class="ficha-item"><span class="icon">📅</span> <strong>Publicado:</strong> {{ propiedad.fecha_publicacion|date:"d/m/Y" }}</div>
+            <div class="ficha-item">{% icono "cama" %} <strong>Dormitorios:</strong> {{ propiedad.dormitorios }}</div>
+            <div class="ficha-item">{% icono "bano" %} <strong>Baños:</strong> {{ propiedad.banos }}</div>
+            <div class="ficha-item">{% icono "area" %} <strong>M²:</strong> {{ propiedad.metros_cuadrados }}</div>
+            <div class="ficha-item">{% icono "tipo" %} <strong>Tipo:</strong> {{ propiedad.get_tipo_propiedad_display }}</div>
+            <div class="ficha-item">{% icono "ubicacion" %} <strong>Estado:</strong> {{ propiedad.get_estado_display }}</div>
         </section>
 
         <section class="detalle-descripcion" data-aos="fade-up">

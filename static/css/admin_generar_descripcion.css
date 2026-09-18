@@ -1,5 +1,13 @@
+/* El admin arma este campo con un flex-container en fila (nowrap); lo dejamos
+   envolver en varias líneas para que nuestros botones queden cada uno en su renglón. */
+.field-descripcion .flex-container {
+    flex-wrap: wrap;
+}
+
 .btn-generar-ia {
     display: inline-block;
+    flex-basis: 100%;
+    width: fit-content;
     margin-bottom: 8px;
     padding: 8px 16px;
     background: linear-gradient(135deg, #ff0000 0%, #b30000 100%);
@@ -23,7 +31,29 @@
 }
 
 .ayuda-generar-ia {
+    flex-basis: 100%;
     margin: 0 0 8px;
     font-size: 0.8rem;
     color: var(--body-quiet-color, #666);
+}
+
+.btn-publicar-ia {
+    display: block;
+    flex-basis: 100%;
+    width: fit-content;
+    margin-top: 10px;
+    padding: 9px 18px;
+    background-color: #1a7a3f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.btn-publicar-ia:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
