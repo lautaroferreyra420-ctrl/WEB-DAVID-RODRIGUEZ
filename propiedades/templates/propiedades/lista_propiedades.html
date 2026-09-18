@@ -102,7 +102,7 @@
                 <p class="conteo-resultados">Hemos encontrado **{{ propiedades|length }}** inmuebles disponibles.</p>
                 
                 {% for propiedad in propiedades %}
-                <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}">
+                <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}">
                     
                     <div class="card-imagen">
                         <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}/static/img/placeholder.jpg{% endif %}" 

@@ -25,6 +25,11 @@ class Propiedad(models.Model):
     direccion = models.CharField(max_length=200, verbose_name="Dirección")
     descripcion = models.TextField(verbose_name="Descripción detallada")
     imagen = models.ImageField(upload_to='propiedades/', blank=True, null=True, verbose_name="Foto principal")
+    video_url = models.URLField(
+        blank=True, null=True,
+        verbose_name="Video (link de YouTube o Vimeo)",
+        help_text="Pegá el link del video (recomendado: subirlo a YouTube como 'Oculto' y pegar ese link acá)."
+    )
     
     # Campos Numéricos y Financieros
     precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio (USD)")
@@ -53,3 +58,17 @@ class Propiedad(models.Model):
 
     def __str__(self):
         return f"{self.direccion} - ${self.precio}"
+
+
+class FotoPropiedad(models.Model):
+    propiedad = models.ForeignKey(Propiedad, related_name='fotos', on_delete=models.CASCADE, verbose_name="Propiedad")
+    imagen = models.ImageField(upload_to='propiedades/galeria/', verbose_name="Foto")
+    orden = models.PositiveIntegerField(default=0, verbose_name="Orden")
+
+    class Meta:
+        ordering = ['orden', 'id']
+        verbose_name = "Foto de la galería"
+        verbose_name_plural = "Fotos de la galería"
+
+    def __str__(self):
+        return f"Foto de {self.propiedad.direccion}"

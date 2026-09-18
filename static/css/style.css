@@ -485,3 +485,322 @@ main {
         width: 100%; /* El botón ocupa todo el ancho */
     }
 }
+
+/* ---------------------------------------------------------------- */
+/* BOTÓN FLOTANTE DE WHATSAPP */
+/* ---------------------------------------------------------------- */
+.whatsapp-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blanco);
+    transition: transform 0.2s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.08);
+}
+
+.whatsapp-float img {
+    width: 100%;
+    height: 100%;
+}
+
+/* ---------------------------------------------------------------- */
+/* EFECTO HOVER EN TARJETAS DE PROPIEDADES */
+/* ---------------------------------------------------------------- */
+.propiedad-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.propiedad-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.card-imagen img {
+    transition: transform 0.4s ease;
+}
+
+.propiedad-card:hover .card-imagen img {
+    transform: scale(1.06);
+}
+
+/* ---------------------------------------------------------------- */
+/* BOTÓN DE WHATSAPP EN LA FICHA DE CONTACTO DE LA PROPIEDAD */
+/* ---------------------------------------------------------------- */
+.btn-whatsapp-propiedad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #25D366;
+    color: var(--color-blanco);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    transition: filter 0.2s ease;
+}
+
+.btn-whatsapp-propiedad:hover {
+    filter: brightness(0.95);
+}
+
+.btn-whatsapp-propiedad img {
+    width: 22px;
+    height: 22px;
+}
+
+/* ---------------------------------------------------------------- */
+/* LAYOUT DE LA PÁGINA DE DETALLE DE PROPIEDAD */
+/* ---------------------------------------------------------------- */
+.detalle-container {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.detalle-principal {
+    background-color: var(--color-blanco);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.detalle-header {
+    border-bottom: 1px solid var(--color-gris-claro);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    /* El selector global "header" (pensado para el banner de arriba) pone line-height:0 y fondo negro; los restauramos acá */
+    line-height: normal;
+    background-color: transparent;
+    width: auto;
+}
+
+.propiedad-titulo {
+    margin: 0 0 8px;
+    font-size: 1.8rem;
+}
+
+.propiedad-precio {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-rojo-acento);
+}
+
+.detalle-galeria {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.detalle-galeria a {
+    display: block;
+}
+
+.imagen-principal {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.detalle-etiqueta-destacada {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background-color: var(--color-rojo-acento);
+    color: var(--color-blanco);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+.detalle-galeria-miniaturas-section,
+.detalle-video,
+.detalle-descripcion,
+.detalle-amenidades {
+    margin-top: 26px;
+}
+
+.detalle-galeria-miniaturas-section h2,
+.detalle-video h2,
+.detalle-descripcion h2,
+.detalle-amenidades h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.detalle-ficha {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    padding: 20px 0;
+    margin: 20px 0;
+    border-top: 1px solid var(--color-gris-claro);
+    border-bottom: 1px solid var(--color-gris-claro);
+}
+
+.ficha-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-negro);
+}
+
+.detalle-descripcion p {
+    line-height: 1.6;
+    color: #333;
+}
+
+.lista-amenidades {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.lista-amenidades li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detalle-contacto {
+    position: sticky;
+    top: 20px;
+}
+
+.contacto-box {
+    background-color: var(--color-blanco);
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.contacto-box h3 {
+    margin-top: 0;
+}
+
+.contacto-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.contacto-box input,
+.contacto-box textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.btn-contacto-principal {
+    background-color: var(--color-negro);
+    color: var(--color-blanco);
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-contacto-principal:hover {
+    background-color: #333;
+}
+
+.contacto-info {
+    margin-top: 14px;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: var(--color-gris-medio);
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .detalle-container {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-contacto {
+        position: static;
+    }
+}
+
+/* ---------------------------------------------------------------- */
+/* GALERÍA DE FOTOS (DETALLE DE PROPIEDAD) */
+/* ---------------------------------------------------------------- */
+.detalle-galeria-miniaturas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.detalle-galeria-miniaturas a {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.detalle-galeria-miniaturas img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.detalle-galeria-miniaturas a:hover img {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* ---------------------------------------------------------------- */
+/* VIDEO RESPONSIVO (DETALLE DE PROPIEDAD) */
+/* ---------------------------------------------------------------- */
+.detalle-video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.detalle-video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}

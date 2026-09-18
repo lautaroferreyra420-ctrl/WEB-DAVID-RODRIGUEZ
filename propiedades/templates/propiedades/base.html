@@ -6,10 +6,12 @@
     <meta charset="UTF-8">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/Logo.png' %}">
     <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock %}</title>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     
@@ -49,7 +51,13 @@
         <p>&copy; {% now "Y" %} David Rodriguez. Todos los derechos reservados.</p>
     </footer>
 
+    <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20consultar%20sobre%20una%20propiedad"
+       class="whatsapp-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+        <img src="{% static 'img/whatsapp.svg' %}" alt="WhatsApp">
+    </a>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
     <script>
         const swiper = new Swiper('.background-swiper', {
@@ -65,7 +73,15 @@
             },
             // No necesitamos navegación para el fondo
         });
+
+        AOS.init({
+            duration: 700,
+            once: true,
+            offset: 80,
+        });
     </script>
+
+    {% block extra_scripts %}{% endblock %}
 
 </body>
 </html>

@@ -1,25 +1,55 @@
 {% extends 'propiedades/base.html' %}
-{% load propiedades_extras %}
+{% load static propiedades_extras %}
 
 {% block title %}{{ propiedad.direccion }} - Detalle{% endblock title %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+{% endblock %}
+
 {% block content %}
 <div class="detalle-container">
-    
+
     <main class="detalle-principal">
-        <header class="detalle-header">
+        <header class="detalle-header" data-aos="fade-up">
             <h1 class="propiedad-titulo">{{ propiedad.direccion }}</h1>
             <p class="propiedad-precio">{{ propiedad.precio|floatformat:0 }} USD</p>
         </header>
 
-        <section class="detalle-galeria">
-            <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}/static/img/placeholder_large.jpg{% endif %}" alt="Imagen principal de {{ propiedad.direccion }}" class="imagen-principal">
+        <section class="detalle-galeria" data-aos="fade-up">
+            <a href="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}{% static 'img/placeholder_large.jpg' %}{% endif %}" data-fancybox="galeria" data-caption="{{ propiedad.direccion }}">
+                <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}{% static 'img/placeholder_large.jpg' %}{% endif %}" alt="Imagen principal de {{ propiedad.direccion }}" class="imagen-principal">
+            </a>
             {% if propiedad.destacado %}
                 <span class="detalle-etiqueta-destacada">PROPIEDAD DESTACADA</span>
             {% endif %}
         </section>
 
-        <section class="detalle-ficha">
+        {% if propiedad.fotos.all %}
+        <section class="detalle-galeria-miniaturas-section" data-aos="fade-up">
+            <h2>Más fotos</h2>
+            <div class="detalle-galeria-miniaturas">
+                {% for foto in propiedad.fotos.all %}
+                <a href="{{ foto.imagen.url }}" data-fancybox="galeria" data-caption="{{ propiedad.direccion }}">
+                    <img src="{{ foto.imagen.url }}" alt="Foto de {{ propiedad.direccion }}">
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if propiedad.video_url %}
+        <section class="detalle-video" data-aos="fade-up">
+            <h2>Video</h2>
+            <div class="detalle-video-wrapper">
+                <iframe src="{{ propiedad.video_url|embed_url }}" title="Video de {{ propiedad.direccion }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="detalle-ficha" data-aos="fade-up">
             <div class="ficha-item"><span class="icon">🛌</span> **Dormitorios:** {{ propiedad.dormitorios }}</div>
             <div class="ficha-item"><span class="icon">🚿</span> **Baños:** {{ propiedad.banos }}</div>
             <div class="ficha-item"><span class="icon">📐</span> **M²:** {{ propiedad.metros_cuadrados }}</div>
@@ -28,12 +58,12 @@
             <div class="ficha-item"><span class="icon">📅</span> **Publicado:** {{ propiedad.fecha_publicacion|date:"d/m/Y" }}</div>
         </section>
 
-        <section class="detalle-descripcion">
+        <section class="detalle-descripcion" data-aos="fade-up">
             <h2>Descripción</h2>
             <p>{{ propiedad.descripcion|linebreaks }}</p>
         </section>
-        
-        <section class="detalle-amenidades">
+
+        <section class="detalle-amenidades" data-aos="fade-up">
             <h2>Amenidades</h2>
             <ul class="lista-amenidades">
                 {% for amenity in propiedad.amenidades|default_if_none:""|split:"," %}
@@ -43,26 +73,39 @@
                 {% endfor %}
             </ul>
         </section>
-        
+
     </main>
 
-    <aside class="detalle-contacto">
+    <aside class="detalle-contacto" data-aos="fade-up">
         <div class="contacto-box">
             <h3>Contacta al Agente</h3>
             <p>Solicita más información sobre esta propiedad.</p>
-            
-            <form action="#" method="POST"> 
+
+            <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20consultar%20sobre%20la%20propiedad%20en%20{{ propiedad.direccion|urlencode }}"
+               target="_blank" rel="noopener" class="btn-whatsapp-propiedad">
+                <img src="{% static 'img/whatsapp.svg' %}" alt="">
+                Consultar por WhatsApp
+            </a>
+
+            <form action="#" method="POST">
                 {% csrf_token %}
                 <input type="text" placeholder="Tu Nombre" required>
                 <input type="email" placeholder="Tu Email" required>
                 <textarea placeholder="Mensaje..." rows="4"></textarea>
-                
+
                 <button type="submit" class="btn-contacto-principal">QUIERO MÁS INFO</button>
             </form>
-            
+
             <p class="contacto-info">O llama al: (555) 123-4567</p>
         </div>
     </aside>
 
 </div>
 {% endblock content %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        Fancybox.bind('[data-fancybox="galeria"]', {});
+    </script>
+{% endblock %}

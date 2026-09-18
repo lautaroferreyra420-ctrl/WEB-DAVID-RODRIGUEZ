@@ -24,12 +24,15 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dr@^h@$x^yln5%+w19bv1yk%kha3dg!d@8t%a#&&5igx+x5$$l'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dr@^h@$x^yln5%+w19bv1yk%kha3dg!d@8t%a#&&5igx+x5$$l')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.7']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+
+# Número de WhatsApp para el botón de contacto directo (formato: código de país + número, sin +, sin espacios)
+WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '5491100000000')
 
 
 # Application definition
@@ -66,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'propiedades.context_processors.whatsapp',
             ],
         },
     },
