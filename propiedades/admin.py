@@ -5,7 +5,22 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 
 from .ai import generar_descripcion, GeneracionDescripcionError
-from .models import Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA
+from .models import Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio
+
+
+class ModeloSingletonAdminMixin:
+    """Panel único: no se puede agregar ni borrar, se salta directo a la edición."""
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        self.model.obtener()
+        opts = self.model._meta
+        return redirect(reverse(f'admin:{opts.app_label}_{opts.model_name}_change', args=[1]))
 
 
 class FotoPropiedadInline(admin.TabularInline):
@@ -80,18 +95,15 @@ class ConsultaPropiedadAdmin(admin.ModelAdmin):
 
 
 @admin.register(ConfiguracionIA)
-class ConfiguracionIAAdmin(admin.ModelAdmin):
-    """Panel único: no se puede agregar ni borrar, solo editar las instrucciones de estilo."""
+class ConfiguracionIAAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
     fields = ('instrucciones_estilo', 'actualizado')
     readonly_fields = ('actualizado',)
 
-    def has_add_permission(self, request):
-        return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def changelist_view(self, request, extra_context=None):
-        # Como solo existe un registro, saltamos directo a la pantalla de edición
-        ConfiguracionIA.obtener()
-        return redirect(reverse('admin:propiedades_configuracionia_change', args=[1]))
+@admin.register(ConfiguracionSitio)
+class ConfiguracionSitioAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
+    fieldsets = (
+        ('Estadística 1', {'fields': ('estadistica_1_numero', 'estadistica_1_etiqueta')}),
+        ('Estadística 2', {'fields': ('estadistica_2_numero', 'estadistica_2_etiqueta')}),
+        ('Estadística 3', {'fields': ('estadistica_3_numero', 'estadistica_3_etiqueta')}),
+    )

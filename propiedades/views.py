@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import Propiedad
+from .models import Propiedad, ConfiguracionSitio
 from .forms import ContactoForm, ConsultaPropiedadForm
 
 logger = logging.getLogger(__name__)
@@ -94,6 +94,7 @@ def lista_propiedades(request):
         'Propiedad': Propiedad,  # Pasamos la clase del modelo a la plantilla
         'titulo_seo': titulo_seo,  # Pasamos nuestro nuevo título SEO a la plantilla
         'filtros_querystring': filtros_querystring.urlencode(),
+        'estadisticas_sitio': ConfiguracionSitio.obtener().estadisticas(),
     }
     # 5. Renderizamos (dibujamos) la plantilla HTML con los datos del contexto.
     return render(request, 'propiedades/lista_propiedades.html', context)

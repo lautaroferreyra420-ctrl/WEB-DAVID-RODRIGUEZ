@@ -153,9 +153,60 @@ nav a:hover::after {
     text-align: center;
     padding: 60px 20px 120px;
     box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Brillo animado sutil, de la paleta de la marca, para darle profundidad al hero */
+.hero::before,
+.hero::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    width: 46vw;
+    height: 46vw;
+    max-width: 560px;
+    max-height: 560px;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.hero::before {
+    top: -10%;
+    left: -8%;
+    background: radial-gradient(circle, var(--color-rojo-acento) 0%, transparent 70%);
+    animation: brillo-flotar-1 16s ease-in-out infinite;
+}
+
+.hero::after {
+    bottom: -18%;
+    right: -6%;
+    background: radial-gradient(circle, #ffffff 0%, transparent 70%);
+    opacity: 0.12;
+    animation: brillo-flotar-2 20s ease-in-out infinite;
+}
+
+@keyframes brillo-flotar-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(6%, 8%) scale(1.15); }
+}
+
+@keyframes brillo-flotar-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-8%, -6%) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero::before,
+    .hero::after {
+        animation: none;
+    }
 }
 
 .hero-contenido {
+    position: relative;
+    z-index: 1;
     max-width: 720px;
 }
 
@@ -309,6 +360,42 @@ main {
     font-size: 1.05rem;
     padding: 6px 14px;
     border-radius: 10px;
+}
+
+.etiqueta-video {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background-color: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: var(--color-blanco);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 999px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Preview de video que se inserta al pasar el mouse por una card con video */
+.card-video-preview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 1;
+    /* Escalamos para disimular los bordes/controles del reproductor embebido */
+    transform: scale(1.35);
+    animation: aparecer-preview 0.3s ease;
+}
+
+@keyframes aparecer-preview {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .card-detalles {
@@ -650,6 +737,7 @@ main {
 
 /* Estilos mejorados para los botones de Comprar/Alquilar */
 .opciones-toggle {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     background-color: #f6f6f8;
@@ -659,15 +747,29 @@ main {
     gap: 3px;
 }
 
+.toggle-indicador {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    height: 34px;
+    background-color: var(--color-negro);
+    border-radius: 6px;
+    transition: transform 0.25s ease, width 0.25s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .toggle-btn {
+    position: relative;
+    z-index: 1; /* Por encima del indicador deslizante */
     height: 34px; /* Altura unificada con los inputs */
     padding: 0 12px;
     border: none; /* Los botones internos no tienen borde */
-    background-color: transparent; /* Fondo transparente por defecto */
+    background-color: transparent; /* El fondo lo da el indicador deslizante */
     border-radius: 6px;
     color: var(--color-gris-medio); /* Texto gris por defecto */
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: color 0.2s ease;
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -677,7 +779,6 @@ main {
 }
 
 .toggle-btn.activo {
-    background-color: var(--color-negro);
     color: var(--color-blanco);
 }
 
@@ -763,6 +864,53 @@ main {
         min-height: 46vh;
         padding: 40px 20px 90px;
     }
+}
+
+/* ---------------------------------------------------------------- */
+/* BARRA DE ESTADÍSTICAS ANIMADAS (INICIO) */
+/* ---------------------------------------------------------------- */
+.stats-bar {
+    position: relative;
+    z-index: 5;
+    padding: 0 5% 30px;
+    margin-top: 20px;
+}
+
+.stats-bar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 24px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    min-width: 120px;
+}
+
+.stat-numero {
+    display: block;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    color: var(--color-rojo-acento);
+    line-height: 1.1;
+}
+
+.stat-etiqueta {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--color-gris-medio);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
 
 /* ---------------------------------------------------------------- */

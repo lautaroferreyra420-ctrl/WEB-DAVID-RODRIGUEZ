@@ -30,6 +30,7 @@
                 <div class="filtro-grupo">
                     <label>Operación</label>
                     <div class="opciones-toggle" id="filtro-transaccion">
+                        <span class="toggle-indicador"></span>
                         <!-- Campo oculto para guardar el valor seleccionado -->
                         <input type="hidden" name="estado" id="input-estado" value="{{ request.GET.estado|default:'Venta' }}">
 
@@ -87,13 +88,40 @@
             </section>
         </div>
 
+        {% if estadisticas_sitio %}
+        <section class="stats-bar" data-aos="fade-up">
+            <div class="stats-bar-inner">
+                {% for stat in estadisticas_sitio %}
+                <div class="stat-item">
+                    <span class="stat-numero" data-valor="{{ stat.numero }}">0</span>
+                    <span class="stat-etiqueta">{{ stat.etiqueta }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
         <!-- 2. Área de Resultados -->
 
         {% comment %} Script para manejar el toggle de operación {% endcomment %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                const contenedorToggle = document.getElementById('filtro-transaccion');
                 const toggleButtons = document.querySelectorAll('#filtro-transaccion .toggle-btn');
                 const estadoInput = document.getElementById('input-estado');
+                const indicador = document.querySelector('#filtro-transaccion .toggle-indicador');
+
+                function moverIndicador(boton, animar) {
+                    if (!indicador || !boton) return;
+                    indicador.style.transition = animar ? '' : 'none';
+                    indicador.style.width = boton.offsetWidth + 'px';
+                    indicador.style.transform = 'translateX(' + boton.offsetLeft + 'px)';
+                    if (!animar) {
+                        // Forzamos reflow para que el próximo cambio sí anime
+                        indicador.offsetHeight;
+                        indicador.style.transition = '';
+                    }
+                }
 
                 toggleButtons.forEach(button => {
                     button.addEventListener('click', function() {
@@ -103,7 +131,15 @@
                         // Actualiza la clase 'activo'
                         toggleButtons.forEach(btn => btn.classList.remove('activo'));
                         this.classList.add('activo');
+
+                        moverIndicador(this, true);
                     });
+                });
+
+                // Posición inicial del indicador (sin animar) sobre el botón activo
+                moverIndicador(contenedorToggle.querySelector('.toggle-btn.activo'), false);
+                window.addEventListener('resize', function () {
+                    moverIndicador(contenedorToggle.querySelector('.toggle-btn.activo'), false);
                 });
             });
         </script>
@@ -117,7 +153,8 @@
 
                 <div class="propiedades-grid">
                     {% for propiedad in propiedades %}
-                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}">
+                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
+                             {% if propiedad.video_url %}data-video-preview="{{ propiedad.video_url|preview_embed_url }}"{% endif %}>
 
                         <div class="card-imagen">
                             <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}"
@@ -125,6 +162,10 @@
 
                             {% if propiedad.destacado %}
                                 <span class="etiqueta-destacada">Destacado</span>
+                            {% endif %}
+
+                            {% if propiedad.video_url %}
+                                <span class="etiqueta-video">▶ Video</span>
                             {% endif %}
 
                             <span class="card-precio-tag">{{ propiedad.precio|floatformat:0 }} USD</span>
@@ -167,3 +208,80 @@
     </form>
 
 {% endblock content %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const RETRASO_MS = 350; // Espera un toque antes de arrancar, para no disparar en un pase rápido del mouse
+
+        document.querySelectorAll('.propiedad-card[data-video-preview]').forEach(function (card) {
+            const contenedorImagen = card.querySelector('.card-imagen');
+            const url = card.dataset.videoPreview;
+            if (!contenedorImagen || !url) return;
+
+            let timeoutId = null;
+            let iframe = null;
+
+            card.addEventListener('mouseenter', function () {
+                // Si ya hay un iframe armado o un arranque pendiente, no duplicamos
+                if (iframe || timeoutId) return;
+                timeoutId = window.setTimeout(function () {
+                    timeoutId = null;
+                    iframe = document.createElement('iframe');
+                    iframe.src = url;
+                    iframe.className = 'card-video-preview';
+                    iframe.setAttribute('allow', 'autoplay; encrypted-media');
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('title', 'Video preview');
+                    contenedorImagen.appendChild(iframe);
+                }, RETRASO_MS);
+            });
+
+            card.addEventListener('mouseleave', function () {
+                if (timeoutId) {
+                    window.clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                if (iframe) {
+                    iframe.remove();
+                    iframe = null;
+                }
+            });
+        });
+
+        // Contador animado de la barra de estadísticas: cuenta desde 0 cuando entra en pantalla
+        const numeros = document.querySelectorAll('.stat-numero');
+        if (numeros.length && 'IntersectionObserver' in window) {
+            const DURACION_MS = 1400;
+
+            function animarNumero(el) {
+                const destino = parseInt(el.dataset.valor, 10) || 0;
+                const inicio = performance.now();
+
+                function frame(ahora) {
+                    const progreso = Math.min((ahora - inicio) / DURACION_MS, 1);
+                    const facilitado = 1 - Math.pow(1 - progreso, 3); // ease-out cubic
+                    el.textContent = Math.round(destino * facilitado).toLocaleString('es-AR');
+                    if (progreso < 1) {
+                        requestAnimationFrame(frame);
+                    } else {
+                        el.textContent = destino.toLocaleString('es-AR');
+                    }
+                }
+                requestAnimationFrame(frame);
+            }
+
+            const observer = new IntersectionObserver(function (entradas) {
+                entradas.forEach(function (entrada) {
+                    if (entrada.isIntersecting) {
+                        animarNumero(entrada.target);
+                        observer.unobserve(entrada.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+
+            numeros.forEach(function (el) { observer.observe(el); });
+        }
+    });
+</script>
+{% endblock %}

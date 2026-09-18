@@ -123,7 +123,26 @@ class ConsultaPropiedad(models.Model):
         return f"{self.nombre} - {self.propiedad.direccion}"
 
 
-class ConfiguracionIA(models.Model):
+class ModeloSingleton(models.Model):
+    """Base para modelos de configuracion de los que solo existe un registro (pk=1)."""
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def obtener(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class ConfiguracionIA(ModeloSingleton):
     """
     Configuracion unica (singleton) con las instrucciones de estilo que se le
     suman al prompt fijo cada vez que se genera una descripcion con IA.
@@ -151,14 +170,38 @@ class ConfiguracionIA(models.Model):
     def __str__(self):
         return "Configuración de IA"
 
-    def save(self, *args, **kwargs):
-        self.pk = 1
-        super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        pass
+class ConfiguracionSitio(ModeloSingleton):
+    """
+    Configuracion unica (singleton) con datos generales del sitio: por ahora,
+    la barra de estadisticas del inicio (numero + etiqueta, hasta 3). Si los tres
+    numeros estan vacios, la barra no se muestra.
+    """
+    estadistica_1_numero = models.PositiveIntegerField(blank=True, null=True, verbose_name="Estadística 1: número")
+    estadistica_1_etiqueta = models.CharField(max_length=60, blank=True, default='', verbose_name="Estadística 1: etiqueta")
 
-    @classmethod
-    def obtener(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
-        return obj
+    estadistica_2_numero = models.PositiveIntegerField(blank=True, null=True, verbose_name="Estadística 2: número")
+    estadistica_2_etiqueta = models.CharField(max_length=60, blank=True, default='', verbose_name="Estadística 2: etiqueta")
+
+    estadistica_3_numero = models.PositiveIntegerField(blank=True, null=True, verbose_name="Estadística 3: número")
+    estadistica_3_etiqueta = models.CharField(max_length=60, blank=True, default='', verbose_name="Estadística 3: etiqueta")
+
+    class Meta:
+        verbose_name = "Configuración del sitio"
+        verbose_name_plural = "Configuración del sitio"
+
+    def __str__(self):
+        return "Configuración del sitio"
+
+    def estadisticas(self):
+        """Devuelve solo las estadisticas que tienen un numero cargado."""
+        candidatas = [
+            (self.estadistica_1_numero, self.estadistica_1_etiqueta),
+            (self.estadistica_2_numero, self.estadistica_2_etiqueta),
+            (self.estadistica_3_numero, self.estadistica_3_etiqueta),
+        ]
+        return [
+            {'numero': numero, 'etiqueta': etiqueta}
+            for numero, etiqueta in candidatas
+            if numero is not None
+        ]

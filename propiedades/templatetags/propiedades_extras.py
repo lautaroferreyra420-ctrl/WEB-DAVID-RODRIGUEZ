@@ -53,3 +53,29 @@ def embed_url(value):
     if vimeo_match:
         return f'https://player.vimeo.com/video/{vimeo_match.group(1)}'
     return value
+
+
+@register.filter
+def preview_embed_url(value):
+    """
+    Como embed_url, pero armado para reproducirse solo, mudo, en loop y sin
+    controles: para el preview que se ve al pasar el mouse sobre una card.
+    """
+    if not value:
+        return ''
+    yt_match = _YOUTUBE_RE.search(value)
+    if yt_match:
+        video_id = yt_match.group(1)
+        return (
+            f'https://www.youtube.com/embed/{video_id}'
+            f'?autoplay=1&mute=1&loop=1&playlist={video_id}'
+            f'&controls=0&modestbranding=1&rel=0&playsinline=1&showinfo=0'
+        )
+    vimeo_match = _VIMEO_RE.search(value)
+    if vimeo_match:
+        video_id = vimeo_match.group(1)
+        return (
+            f'https://player.vimeo.com/video/{video_id}'
+            f'?autoplay=1&muted=1&loop=1&background=1'
+        )
+    return ''
