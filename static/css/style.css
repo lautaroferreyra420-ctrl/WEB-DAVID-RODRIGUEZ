@@ -487,6 +487,39 @@ main {
 }
 
 /* ---------------------------------------------------------------- */
+/* PAGINACIÓN DEL LISTADO */
+/* ---------------------------------------------------------------- */
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 20px 0;
+}
+
+.paginacion a {
+    color: var(--color-blanco);
+    background-color: var(--color-negro);
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.paginacion a:hover {
+    background-color: var(--color-rojo-acento);
+}
+
+.paginacion-actual {
+    color: var(--color-blanco);
+    background-color: var(--color-gris-oscuro-transparente);
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+/* ---------------------------------------------------------------- */
 /* BOTÓN FLOTANTE DE WHATSAPP */
 /* ---------------------------------------------------------------- */
 .whatsapp-float {
@@ -532,6 +565,58 @@ main {
 
 .propiedad-card:hover .card-imagen img {
     transform: scale(1.06);
+}
+
+/* ---------------------------------------------------------------- */
+/* MAPA (DETALLE DE PROPIEDAD) */
+/* ---------------------------------------------------------------- */
+.detalle-mapa-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.detalle-mapa-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* ---------------------------------------------------------------- */
+/* BOTÓN "COPIAR LINK" Y MENSAJE DE ÉXITO DEL FORMULARIO */
+/* ---------------------------------------------------------------- */
+.btn-copiar-link {
+    display: block;
+    width: 100%;
+    background-color: transparent;
+    color: var(--color-negro);
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-copiar-link:hover {
+    background-color: var(--color-gris-claro);
+}
+
+.form-exito {
+    background-color: #e6f7ed;
+    color: #1a7a3f;
+    border: 1px solid #b8e6c9;
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
 }
 
 /* ---------------------------------------------------------------- */

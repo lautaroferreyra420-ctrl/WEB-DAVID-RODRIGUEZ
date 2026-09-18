@@ -99,8 +99,8 @@
         <div class="main-container"> 
             <main id="area-resultados">
                 <h2>{{ titulo_seo }}</h2>
-                <p class="conteo-resultados">Hemos encontrado **{{ propiedades|length }}** inmuebles disponibles.</p>
-                
+                <p class="conteo-resultados">Hemos encontrado **{{ total_propiedades }}** inmuebles disponibles.</p>
+
                 {% for propiedad in propiedades %}
                 <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}">
                     
@@ -123,13 +123,27 @@
                             <div><span class="icon">📐</span> {{ propiedad.metros_cuadrados }} m²</div>
                         </div>
                         
-                        <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-ver-mas">Ver Detalles</a>
+                        <a href="{{ propiedad.get_absolute_url }}" class="btn-ver-mas">Ver Detalles</a>
                     </div>
                 </article>
                 {% empty %}
                     <p class="no-resultados">Lo sentimos, no encontramos propiedades con esos criterios de búsqueda. Intenta con menos filtros.</p>
                 {% endfor %}
-                
+
+                {% if propiedades.has_other_pages %}
+                <nav class="paginacion" aria-label="Paginación de propiedades">
+                    {% if propiedades.has_previous %}
+                        <a href="?page={{ propiedades.previous_page_number }}{% if filtros_querystring %}&{{ filtros_querystring }}{% endif %}">&laquo; Anterior</a>
+                    {% endif %}
+
+                    <span class="paginacion-actual">Página {{ propiedades.number }} de {{ propiedades.paginator.num_pages }}</span>
+
+                    {% if propiedades.has_next %}
+                        <a href="?page={{ propiedades.next_page_number }}{% if filtros_querystring %}&{{ filtros_querystring }}{% endif %}">Siguiente &raquo;</a>
+                    {% endif %}
+                </nav>
+                {% endif %}
+
             </main>
 
         </div>

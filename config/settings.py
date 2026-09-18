@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles', # Añadido para manejo de estáticos
+    'django.contrib.sitemaps',
     'propiedades',
 ]
 

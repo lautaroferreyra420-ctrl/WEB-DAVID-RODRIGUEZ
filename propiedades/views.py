@@ -1,10 +1,28 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Propiedad
-from .forms import ContactoForm
-from django.core.mail import send_mail
-from django.conf import settings
+import logging
 
-# Create your views here.
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
+
+from .models import Propiedad
+from .forms import ContactoForm, ConsultaPropiedadForm
+
+logger = logging.getLogger(__name__)
+
+PROPIEDADES_POR_PAGINA = 12
+
+
+def _enviar_email_seguro(asunto, cuerpo, destinatario):
+    """Envía un email sin romper la vista si el servidor de correo no está configurado."""
+    if not settings.EMAIL_HOST_USER:
+        logger.warning("Email no enviado (EMAIL_HOST_USER no configurado): %s", asunto)
+        return
+    try:
+        send_mail(asunto, cuerpo, settings.DEFAULT_FROM_EMAIL, [destinatario])
+    except Exception:
+        logger.exception("Fallo al enviar email: %s", asunto)
+
 
 def lista_propiedades(request):
     """
@@ -42,46 +60,86 @@ def lista_propiedades(request):
     if metros_min:
         # Filtramos propiedades con metros cuadrados mayor o igual a...
         propiedades = propiedades.filter(metros_cuadrados__gte=metros_min)
-    
-    
+
     # --- SEO: Construcción de un título dinámico ---
-    # (Esta lógica ya estaba bien, la dejamos como está)
     titulo_partes = []
     if tipo_propiedad:
-        titulo_partes.append(tipo_propiedad + 's') # Ej: "Casas"
+        titulo_partes.append(tipo_propiedad + 's')  # Ej: "Casas"
     else:
-        titulo_partes.append('Propiedades') # Genérico si no hay tipo
-        
+        titulo_partes.append('Propiedades')  # Genérico si no hay tipo
+
     if estado:
-        titulo_partes.append(f"en {estado}") # Ej: "en Venta"
-        
+        titulo_partes.append(f"en {estado}")  # Ej: "en Venta"
+
     if ubicacion:
-        titulo_partes.append(f"en {ubicacion}") # Ej: "en Palermo"
-        
+        titulo_partes.append(f"en {ubicacion}")  # Ej: "en Palermo"
+
     # Unimos todo para formar el título. Si no hay filtros, será "Propiedades Disponibles"
     titulo_seo = ' '.join(titulo_partes) if titulo_partes else 'Propiedades Disponibles'
-    
-    # 3. Creamos el "contexto", que es un diccionario para pasarle datos a la plantilla.
+
+    # 3. Paginamos los resultados para no traer cientos de propiedades de una sola vez.
+    total_propiedades = propiedades.count()
+    paginator = Paginator(propiedades, PROPIEDADES_POR_PAGINA)
+    numero_pagina = request.GET.get('page')
+    pagina = paginator.get_page(numero_pagina)
+
+    # Armamos la querystring de los filtros actuales para que la paginación no los pierda
+    filtros_querystring = request.GET.copy()
+    filtros_querystring.pop('page', None)
+
+    # 4. Creamos el "contexto", que es un diccionario para pasarle datos a la plantilla.
     context = {
-        'propiedades': propiedades, # Ahora pasamos la lista ya filtrada
-        'Propiedad': Propiedad, # Pasamos la clase del modelo a la plantilla
-        'titulo_seo': titulo_seo, # Pasamos nuestro nuevo título SEO a la plantilla
+        'propiedades': pagina,  # La página actual de resultados
+        'total_propiedades': total_propiedades,
+        'Propiedad': Propiedad,  # Pasamos la clase del modelo a la plantilla
+        'titulo_seo': titulo_seo,  # Pasamos nuestro nuevo título SEO a la plantilla
+        'filtros_querystring': filtros_querystring.urlencode(),
     }
-    # 4. Renderizamos (dibujamos) la plantilla HTML con los datos del contexto.
+    # 5. Renderizamos (dibujamos) la plantilla HTML con los datos del contexto.
     return render(request, 'propiedades/lista_propiedades.html', context)
 
 
-def detalle_propiedad(request, pk):
+def detalle_propiedad(request, pk, slug=None):
     """
-    Esta vista obtiene UNA propiedad específica por su ID (pk)
-    y la envía a la plantilla para mostrar todos sus detalles.
+    Esta vista obtiene UNA propiedad específica por su ID (pk), la envía a la
+    plantilla para mostrar todos sus detalles y procesa la consulta del interesado.
     """
-    # 1. Obtenemos la propiedad que corresponde a la ID (pk). Si no la encuentra, da un error 404.
     propiedad = get_object_or_404(Propiedad, pk=pk)
 
-    # 2. Creamos el contexto para pasar la propiedad a la plantilla.
+    # Si el slug de la URL no coincide (o falta), redirigimos a la URL canónica.
+    if slug != propiedad.slug:
+        return redirect(propiedad.get_absolute_url(), permanent=True)
+
+    mensaje_enviado = False
+
+    if request.method == 'POST':
+        form = ConsultaPropiedadForm(request.POST)
+        if form.is_valid():
+            if not form.es_spam():
+                consulta = form.save(commit=False)
+                consulta.propiedad = propiedad
+                consulta.save()
+
+                _enviar_email_seguro(
+                    asunto=f"Consulta por propiedad: {propiedad.direccion}",
+                    cuerpo=(
+                        f"Nombre: {consulta.nombre}\n"
+                        f"Email: {consulta.email}\n\n"
+                        f"Propiedad: {propiedad.direccion} ({propiedad.get_absolute_url()})\n\n"
+                        f"Mensaje:\n{consulta.mensaje}"
+                    ),
+                    destinatario=settings.EMAIL_HOST_USER,
+                )
+            # Mostramos éxito igual si era spam, para no delatarle al bot que lo detectamos.
+            mensaje_enviado = True
+            form = ConsultaPropiedadForm()
+    else:
+        form = ConsultaPropiedadForm()
+
     context = {
-        'propiedad': propiedad
+        'propiedad': propiedad,
+        'form': form,
+        'mensaje_enviado': mensaje_enviado,
     }
 
     # 3. Renderizamos la plantilla de detalle.
@@ -98,7 +156,7 @@ def pagina_contacto(request):
     if request.method == 'POST':
         # Si el método es POST, procesamos el formulario
         form = ContactoForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and not form.es_spam():
             # Si el formulario es válido, enviamos el correo
             cd = form.cleaned_data
             asunto = f"Nuevo mensaje de contacto de {cd['nombre']}"
@@ -108,11 +166,11 @@ def pagina_contacto(request):
                 f"Teléfono: {cd.get('telefono', 'No proporcionado')}\n\n"
                 f"Mensaje:\n{cd['mensaje']}"
             )
-            
-            send_mail(asunto, cuerpo_mensaje, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-            
+
+            _enviar_email_seguro(asunto, cuerpo_mensaje, settings.EMAIL_HOST_USER)
+
             mensaje_enviado = True
-            form = ContactoForm() # Limpiamos el formulario después de enviar
+            form = ContactoForm()  # Limpiamos el formulario después de enviar
     else:
         # Si el método es GET, mostramos un formulario vacío
         form = ContactoForm()

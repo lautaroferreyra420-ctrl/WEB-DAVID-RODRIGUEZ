@@ -1,7 +1,12 @@
 # propiedades/models.py
 
 from django.db import models
-from django.utils import timezone 
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.text import slugify
+
+from .utils import optimizar_imagen
+
 
 class Propiedad(models.Model):
     # --- MODIFICACIONES DE CHOICES PARA FILTROS MÁS LIMPIOS ---
@@ -23,6 +28,7 @@ class Propiedad(models.Model):
     
     # --- CAMPOS DE INFORMACIÓN ---
     direccion = models.CharField(max_length=200, verbose_name="Dirección")
+    slug = models.SlugField(max_length=220, blank=True, verbose_name="URL amigable")
     descripcion = models.TextField(verbose_name="Descripción detallada")
     imagen = models.ImageField(upload_to='propiedades/', blank=True, null=True, verbose_name="Foto principal")
     video_url = models.URLField(
@@ -54,10 +60,26 @@ class Propiedad(models.Model):
     fecha_publicacion = models.DateTimeField(default=timezone.now, verbose_name="Fecha de Publicación")
 
     class Meta:
-        verbose_name_plural = "Propiedades" 
+        verbose_name_plural = "Propiedades"
 
     def __str__(self):
         return f"{self.direccion} - ${self.precio}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.direccion)[:220]
+
+        if self.imagen:
+            imagen_anterior = None
+            if self.pk:
+                imagen_anterior = Propiedad.objects.filter(pk=self.pk).values_list('imagen', flat=True).first()
+            if imagen_anterior != self.imagen.name:
+                optimizar_imagen(self.imagen)
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('detalle_propiedad', args=[self.pk, self.slug])
 
 
 class FotoPropiedad(models.Model):
@@ -70,5 +92,31 @@ class FotoPropiedad(models.Model):
         verbose_name = "Foto de la galería"
         verbose_name_plural = "Fotos de la galería"
 
+    def save(self, *args, **kwargs):
+        if self.imagen:
+            imagen_anterior = None
+            if self.pk:
+                imagen_anterior = FotoPropiedad.objects.filter(pk=self.pk).values_list('imagen', flat=True).first()
+            if imagen_anterior != self.imagen.name:
+                optimizar_imagen(self.imagen)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Foto de {self.propiedad.direccion}"
+
+
+class ConsultaPropiedad(models.Model):
+    propiedad = models.ForeignKey(Propiedad, related_name='consultas', on_delete=models.CASCADE, verbose_name="Propiedad")
+    nombre = models.CharField(max_length=100, verbose_name="Nombre")
+    email = models.EmailField(verbose_name="Email")
+    mensaje = models.TextField(verbose_name="Mensaje")
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha")
+    atendida = models.BooleanField(default=False, verbose_name="Atendida")
+
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = "Consulta por propiedad"
+        verbose_name_plural = "Consultas por propiedad"
+
+    def __str__(self):
+        return f"{self.nombre} - {self.propiedad.direccion}"

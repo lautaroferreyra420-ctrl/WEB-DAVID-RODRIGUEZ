@@ -1,7 +1,20 @@
 {% extends 'propiedades/base.html' %}
 {% load static propiedades_extras %}
 
-{% block title %}{{ propiedad.direccion }} - Detalle{% endblock title %}
+{% block title %}{{ propiedad.direccion }} - {{ propiedad.get_tipo_propiedad_display }} en {{ propiedad.get_estado_display }}{% endblock title %}
+
+{% block meta_description %}
+<meta name="description" content="{{ propiedad.direccion }} - {{ propiedad.precio|floatformat:0 }} USD. {{ propiedad.dormitorios }} dormitorios, {{ propiedad.banos }} baños, {{ propiedad.metros_cuadrados }} m². {{ propiedad.descripcion|truncatechars:120 }}">
+{% endblock %}
+
+{% block og_tags %}
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="David Rodriguez Propiedades">
+<meta property="og:title" content="{{ propiedad.direccion }} - {{ propiedad.precio|floatformat:0 }} USD">
+<meta property="og:description" content="{{ propiedad.dormitorios }} dormitorios, {{ propiedad.banos }} baños, {{ propiedad.metros_cuadrados }} m². {{ propiedad.descripcion|truncatechars:150 }}">
+<meta property="og:image" content="{% if propiedad.imagen %}{{ request.scheme }}://{{ request.get_host }}{{ propiedad.imagen.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/placeholder_large.jpg' %}{% endif %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
@@ -74,6 +87,14 @@
             </ul>
         </section>
 
+        <section class="detalle-mapa" data-aos="fade-up">
+            <h2>Ubicación</h2>
+            <div class="detalle-mapa-wrapper">
+                <iframe src="https://www.google.com/maps?q={{ propiedad.direccion|urlencode }}&output=embed"
+                        title="Mapa de {{ propiedad.direccion }}" loading="lazy"></iframe>
+            </div>
+        </section>
+
     </main>
 
     <aside class="detalle-contacto" data-aos="fade-up">
@@ -87,14 +108,23 @@
                 Consultar por WhatsApp
             </a>
 
-            <form action="#" method="POST">
+            <button type="button" class="btn-copiar-link" data-link="{{ request.build_absolute_uri }}">
+                🔗 Copiar link de esta propiedad
+            </button>
+
+            {% if mensaje_enviado %}
+                <p class="form-exito">¡Gracias! Recibimos tu consulta, te vamos a contactar a la brevedad.</p>
+            {% else %}
+            <form method="POST">
                 {% csrf_token %}
-                <input type="text" placeholder="Tu Nombre" required>
-                <input type="email" placeholder="Tu Email" required>
-                <textarea placeholder="Mensaje..." rows="4"></textarea>
+                {{ form.website }}
+                <input type="text" name="{{ form.nombre.name }}" placeholder="Tu Nombre" value="{{ form.nombre.value|default:'' }}" required>
+                <input type="email" name="{{ form.email.name }}" placeholder="Tu Email" value="{{ form.email.value|default:'' }}" required>
+                <textarea name="{{ form.mensaje.name }}" placeholder="Mensaje..." rows="4" required>{{ form.mensaje.value|default:'' }}</textarea>
 
                 <button type="submit" class="btn-contacto-principal">QUIERO MÁS INFO</button>
             </form>
+            {% endif %}
 
             <p class="contacto-info">O llama al: (555) 123-4567</p>
         </div>
@@ -107,5 +137,19 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
     <script>
         Fancybox.bind('[data-fancybox="galeria"]', {});
+
+        const btnCopiar = document.querySelector('.btn-copiar-link');
+        if (btnCopiar) {
+            btnCopiar.addEventListener('click', async function () {
+                const textoOriginal = btnCopiar.textContent;
+                try {
+                    await navigator.clipboard.writeText(btnCopiar.dataset.link);
+                    btnCopiar.textContent = '✅ Link copiado';
+                } catch (err) {
+                    btnCopiar.textContent = 'No se pudo copiar';
+                }
+                setTimeout(() => { btnCopiar.textContent = textoOriginal; }, 2000);
+            });
+        }
     </script>
 {% endblock %}
