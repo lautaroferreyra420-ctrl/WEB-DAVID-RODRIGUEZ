@@ -153,60 +153,9 @@ nav a:hover::after {
     text-align: center;
     padding: 60px 20px 120px;
     box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* Brillo animado sutil, de la paleta de la marca, para darle profundidad al hero */
-.hero::before,
-.hero::after {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    width: 46vw;
-    height: 46vw;
-    max-width: 560px;
-    max-height: 560px;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.35;
-    pointer-events: none;
-}
-
-.hero::before {
-    top: -10%;
-    left: -8%;
-    background: radial-gradient(circle, var(--color-rojo-acento) 0%, transparent 70%);
-    animation: brillo-flotar-1 16s ease-in-out infinite;
-}
-
-.hero::after {
-    bottom: -18%;
-    right: -6%;
-    background: radial-gradient(circle, #ffffff 0%, transparent 70%);
-    opacity: 0.12;
-    animation: brillo-flotar-2 20s ease-in-out infinite;
-}
-
-@keyframes brillo-flotar-1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(6%, 8%) scale(1.15); }
-}
-
-@keyframes brillo-flotar-2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-8%, -6%) scale(1.1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .hero::before,
-    .hero::after {
-        animation: none;
-    }
 }
 
 .hero-contenido {
-    position: relative;
-    z-index: 1;
     max-width: 720px;
 }
 
@@ -388,8 +337,6 @@ main {
     height: 100%;
     border: 0;
     z-index: 1;
-    /* Escalamos para disimular los bordes/controles del reproductor embebido */
-    transform: scale(1.35);
     animation: aparecer-preview 0.3s ease;
 }
 
