@@ -27,6 +27,11 @@ class Propiedad(models.Model):
         ('Terreno', 'Terreno'), # AÑADIDO: Incluimos 'Terreno' como tipo de propiedad común
     ]
     
+    OPCIONES_MONEDA = [
+        ('USD', 'USD (dólares)'),
+        ('ARS', '$ (pesos)'),
+    ]
+
     # --- CAMPOS DE INFORMACIÓN ---
     direccion = models.CharField(max_length=200, verbose_name="Dirección")
     slug = models.SlugField(max_length=220, blank=True, verbose_name="URL amigable")
@@ -39,8 +44,16 @@ class Propiedad(models.Model):
     )
     
     # Campos Numéricos y Financieros
-    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio (USD)")
+    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio")
+    moneda = models.CharField(
+        max_length=3, choices=OPCIONES_MONEDA, default='USD', verbose_name="Moneda",
+        help_text="Los alquileres suelen publicarse en pesos; las ventas, en dólares.",
+    )
     dormitorios = models.IntegerField(default=1, verbose_name="Dormitorios")
+    ambientes = models.PositiveSmallIntegerField(
+        blank=True, null=True, verbose_name="Ambientes",
+        help_text="Opcional. Se usa para buscar alquileres por ambientes.",
+    )
     metros_cuadrados = models.IntegerField(default=0, verbose_name="M² Construidos")
     banos = models.IntegerField(default=1, verbose_name="Baños")
     
@@ -64,7 +77,13 @@ class Propiedad(models.Model):
         verbose_name_plural = "Propiedades"
 
     def __str__(self):
-        return f"{self.direccion} - ${self.precio}"
+        return f"{self.direccion} - {self.precio_formateado}"
+
+    @property
+    def precio_formateado(self):
+        """Ej: 'USD 185.000' o '$ 450.000' (punto como separador de miles)."""
+        monto = f"{self.precio:,.0f}".replace(",", ".")
+        return f"$ {monto}" if self.moneda == 'ARS' else f"USD {monto}"
 
     def save(self, *args, **kwargs):
         if not self.slug:

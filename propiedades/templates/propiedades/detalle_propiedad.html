@@ -4,13 +4,13 @@
 {% block title %}{{ propiedad.direccion }} - {{ propiedad.get_tipo_propiedad_display }} en {{ propiedad.get_estado_display }}{% endblock title %}
 
 {% block meta_description %}
-<meta name="description" content="{{ propiedad.direccion }} - {{ propiedad.precio|floatformat:0 }} USD. {{ propiedad.dormitorios }} dormitorios, {{ propiedad.banos }} baños, {{ propiedad.metros_cuadrados }} m². {{ propiedad.descripcion|truncatechars:120 }}">
+<meta name="description" content="{{ propiedad.direccion }} - {{ propiedad.precio_formateado }}. {{ propiedad.dormitorios }} dormitorios, {{ propiedad.banos }} baños, {{ propiedad.metros_cuadrados }} m². {{ propiedad.descripcion|truncatechars:120 }}">
 {% endblock %}
 
 {% block og_tags %}
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="David Rodriguez Propiedades">
-<meta property="og:title" content="{{ propiedad.direccion }} - {{ propiedad.precio|floatformat:0 }} USD">
+<meta property="og:title" content="{{ propiedad.direccion }} - {{ propiedad.precio_formateado }}">
 <meta property="og:description" content="{{ propiedad.dormitorios }} dormitorios, {{ propiedad.banos }} baños, {{ propiedad.metros_cuadrados }} m². {{ propiedad.descripcion|truncatechars:150 }}">
 <meta property="og:image" content="{% if propiedad.imagen %}{{ request.scheme }}://{{ request.get_host }}{{ propiedad.imagen.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/placeholder_large.jpg' %}{% endif %}">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
@@ -26,7 +26,7 @@
     <main class="detalle-principal">
         <header class="detalle-header" data-aos="fade-up">
             <h1 class="propiedad-titulo">{{ propiedad.direccion }}</h1>
-            <p class="propiedad-precio">{{ propiedad.precio|floatformat:0 }} USD</p>
+            <p class="propiedad-precio">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</p>
         </header>
 
         <section class="detalle-galeria" data-aos="fade-up">
@@ -66,6 +66,7 @@
         <section class="detalle-ficha" data-aos="fade-up">
             <div class="ficha-item">{% icono "cama" %} <strong>Dormitorios:</strong> {{ propiedad.dormitorios }}</div>
             <div class="ficha-item">{% icono "bano" %} <strong>Baños:</strong> {{ propiedad.banos }}</div>
+            {% if propiedad.ambientes %}<div class="ficha-item">{% icono "ambientes" %} <strong>Ambientes:</strong> {{ propiedad.ambientes }}</div>{% endif %}
             <div class="ficha-item">{% icono "area" %} <strong>M²:</strong> {{ propiedad.metros_cuadrados }}</div>
             <div class="ficha-item">{% icono "tipo" %} <strong>Tipo:</strong> {{ propiedad.get_tipo_propiedad_display }}</div>
             <div class="ficha-item">{% icono "ubicacion" %} <strong>Estado:</strong> {{ propiedad.get_estado_display }}</div>
@@ -98,35 +99,50 @@
     </main>
 
     <aside class="detalle-contacto" data-aos="fade-up">
-        <div class="contacto-box">
-            <h3>Contacta al Agente</h3>
-            <p>Solicita más información sobre esta propiedad.</p>
+        <div class="contacto-card">
+            <div class="contacto-card-cabecera">
+                <span class="contacto-avatar" aria-hidden="true">DR</span>
+                <div>
+                    <h3>Consultá por esta propiedad</h3>
+                    <p>David Rodríguez Propiedades &middot; Te respondemos a la brevedad</p>
+                </div>
+            </div>
 
             <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20consultar%20sobre%20la%20propiedad%20en%20{{ propiedad.direccion|urlencode }}"
                target="_blank" rel="noopener" class="btn-whatsapp-propiedad">
                 <img src="{% static 'img/whatsapp.svg' %}" alt="">
-                Consultar por WhatsApp
+                Escribir por WhatsApp
             </a>
-
-            <button type="button" class="btn-copiar-link" data-link="{{ request.build_absolute_uri }}">
-                🔗 Copiar link de esta propiedad
-            </button>
 
             {% if mensaje_enviado %}
                 <p class="form-exito">¡Gracias! Recibimos tu consulta, te vamos a contactar a la brevedad.</p>
             {% else %}
-            <form method="POST">
+            <div class="contacto-separador"><span>o dejanos tu consulta</span></div>
+
+            <form method="POST" class="contacto-form">
                 {% csrf_token %}
                 {{ form.website }}
-                <input type="text" name="{{ form.nombre.name }}" placeholder="Tu Nombre" value="{{ form.nombre.value|default:'' }}" required>
-                <input type="email" name="{{ form.email.name }}" placeholder="Tu Email" value="{{ form.email.value|default:'' }}" required>
-                <textarea name="{{ form.mensaje.name }}" placeholder="Mensaje..." rows="4" required>{{ form.mensaje.value|default:'' }}</textarea>
+                <input type="text" name="{{ form.nombre.name }}" placeholder="Tu nombre" value="{{ form.nombre.value|default:'' }}" required>
+                <input type="email" name="{{ form.email.name }}" placeholder="Tu email" value="{{ form.email.value|default:'' }}" required>
+                <textarea name="{{ form.mensaje.name }}" placeholder="Contanos qué te interesa saber..." rows="3" required>{{ form.mensaje.value|default:'' }}</textarea>
 
-                <button type="submit" class="btn-contacto-principal">QUIERO MÁS INFO</button>
+                <button type="submit" class="btn-contacto-principal">
+                    Enviar consulta
+                    <svg class="icono-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
             </form>
             {% endif %}
 
-            <p class="contacto-info">O llama al: (555) 123-4567</p>
+            <div class="contacto-pie">
+                <a href="tel:+5491112345678">
+                    <svg class="icono-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+                    +54 9 11 1234-5678
+                </a>
+                <button type="button" class="btn-copiar-link" data-link="{{ request.build_absolute_uri }}">
+                    <svg class="icono-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+                    <span>Copiar link</span>
+                </button>
+            </div>
         </div>
     </aside>
 
@@ -141,14 +157,15 @@
         const btnCopiar = document.querySelector('.btn-copiar-link');
         if (btnCopiar) {
             btnCopiar.addEventListener('click', async function () {
-                const textoOriginal = btnCopiar.textContent;
+                const etiqueta = btnCopiar.querySelector('span');
+                const textoOriginal = etiqueta.textContent;
                 try {
                     await navigator.clipboard.writeText(btnCopiar.dataset.link);
-                    btnCopiar.textContent = '✅ Link copiado';
+                    etiqueta.textContent = 'Link copiado';
                 } catch (err) {
-                    btnCopiar.textContent = 'No se pudo copiar';
+                    etiqueta.textContent = 'No se pudo copiar';
                 }
-                setTimeout(() => { btnCopiar.textContent = textoOriginal; }, 2000);
+                setTimeout(() => { etiqueta.textContent = textoOriginal; }, 2000);
             });
         }
     </script>

@@ -49,7 +49,10 @@ def generar_descripcion(datos: dict) -> str:
     if datos.get('estado'):
         hechos.append(f"Operación: {datos['estado']}")
     if datos.get('precio'):
-        hechos.append(f"Precio: {datos['precio']} USD")
+        moneda = "pesos argentinos" if datos.get('moneda') == 'ARS' else "USD"
+        hechos.append(f"Precio: {datos['precio']} {moneda}")
+    if datos.get('ambientes'):
+        hechos.append(f"Ambientes: {datos['ambientes']}")
     if datos.get('dormitorios'):
         hechos.append(f"Dormitorios: {datos['dormitorios']}")
     if datos.get('banos'):

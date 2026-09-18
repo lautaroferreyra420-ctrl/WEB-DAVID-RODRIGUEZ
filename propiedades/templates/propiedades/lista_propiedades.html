@@ -67,20 +67,30 @@
                     </select>
                 </div>
 
+                {% with es_alquiler=request.GET.estado|default:''|stringformat:"s" %}
                 <div class="filtro-grupo">
-                    <label>$ / USD</label>
+                    <label id="label-precio" data-usd="USD" data-ars="$ Pesos">{% if es_alquiler == 'Alquiler' %}$ Pesos{% else %}USD{% endif %}</label>
                     <div class="range-inputs">
                         <input type="number" name="precio_min" placeholder="Mínimo" value="{{ request.GET.precio_min|default:'' }}">
                         <input type="number" name="precio_max" placeholder="Máximo" value="{{ request.GET.precio_max|default:'' }}">
                     </div>
                 </div>
 
-                <div class="filtro-grupo">
+                <!-- Según la operación se muestra M² (compra, permuta, emprendimientos) o Ambientes (alquiler) -->
+                <div class="filtro-grupo" id="grupo-metros" {% if es_alquiler == 'Alquiler' %}hidden{% endif %}>
                     <label for="metros_cuadrados_min">M²</label>
                     <input type="number" name="metros_cuadrados_min" id="metros_cuadrados_min"
-                           placeholder="Ej: 50"
+                           placeholder="Ej: 50" {% if es_alquiler == 'Alquiler' %}disabled{% endif %}
                            value="{{ request.GET.metros_cuadrados_min|default:'' }}">
                 </div>
+
+                <div class="filtro-grupo" id="grupo-ambientes" {% if es_alquiler != 'Alquiler' %}hidden{% endif %}>
+                    <label for="ambientes_min">Ambientes</label>
+                    <input type="number" name="ambientes_min" id="ambientes_min" min="1"
+                           placeholder="Ej: 2" {% if es_alquiler != 'Alquiler' %}disabled{% endif %}
+                           value="{{ request.GET.ambientes_min|default:'' }}">
+                </div>
+                {% endwith %}
 
                 <button type="submit" id="btn-aplicar-filtro" title="Buscar propiedades">
                     <img src="{% static 'img/boton_busqueda_blanco.svg' %}" alt="Buscar" class="search-svg-icon">
@@ -123,10 +133,44 @@
                     }
                 }
 
+                // En Alquiler el precio se busca en pesos y en vez de M² se filtra por ambientes
+                const labelPrecio = document.getElementById('label-precio');
+                const grupoMetros = document.getElementById('grupo-metros');
+                const grupoAmbientes = document.getElementById('grupo-ambientes');
+
+                function mostrarGrupo(grupo, visible) {
+                    grupo.hidden = !visible;
+                    grupo.querySelector('input').disabled = !visible; // un input deshabilitado no se envía
+                    if (visible) {
+                        grupo.classList.remove('filtro-cambio');
+                        grupo.offsetWidth; // reinicia la animación
+                        grupo.classList.add('filtro-cambio');
+                    }
+                }
+
+                function adaptarFiltrosAOperacion(operacion) {
+                    const esAlquiler = operacion === 'Alquiler';
+                    const textoPrecio = esAlquiler ? labelPrecio.dataset.ars : labelPrecio.dataset.usd;
+                    if (labelPrecio.textContent !== textoPrecio) {
+                        labelPrecio.textContent = textoPrecio;
+                        labelPrecio.classList.remove('filtro-cambio');
+                        labelPrecio.offsetWidth;
+                        labelPrecio.classList.add('filtro-cambio');
+                    }
+                    if (grupoMetros.hidden === esAlquiler) return; // ya está en el estado correcto
+                    mostrarGrupo(grupoMetros, !esAlquiler);
+                    mostrarGrupo(grupoAmbientes, esAlquiler);
+                    // Al cambiar de filtro, el valor del otro deja de tener sentido
+                    (esAlquiler ? grupoMetros : grupoAmbientes).querySelector('input').value = '';
+                    // El ancho de la barra puede cambiar: reacomodamos el indicador del toggle
+                    moverIndicador(contenedorToggle.querySelector('.toggle-btn.activo'), false);
+                }
+
                 toggleButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         // Actualiza el valor del input oculto
                         estadoInput.value = this.dataset.value;
+                        adaptarFiltrosAOperacion(this.dataset.value);
 
                         // Actualiza la clase 'activo'
                         toggleButtons.forEach(btn => btn.classList.remove('activo'));
@@ -168,7 +212,7 @@
                                 <span class="etiqueta-video">▶ Video</span>
                             {% endif %}
 
-                            <span class="card-precio-tag">{{ propiedad.precio|floatformat:0 }} USD</span>
+                            <span class="card-precio-tag">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</span>
                         </div>
 
                         <div class="card-detalles">
@@ -177,6 +221,7 @@
                             <div class="card-specs">
                                 <span>{% icono "cama" %} {{ propiedad.dormitorios }}</span>
                                 <span>{% icono "bano" %} {{ propiedad.banos }}</span>
+                                {% if propiedad.ambientes %}<span>{% icono "ambientes" %} {{ propiedad.ambientes }} amb.</span>{% endif %}
                                 <span>{% icono "area" %} {{ propiedad.metros_cuadrados }} m²</span>
                             </div>
 

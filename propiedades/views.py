@@ -36,6 +36,7 @@ def lista_propiedades(request):
     precio_min = request.GET.get('precio_min', '')
     precio_max = request.GET.get('precio_max', '')
     metros_min = request.GET.get('metros_cuadrados_min', '')
+    ambientes_min = request.GET.get('ambientes_min', '')
 
     # 1. Empezamos con todas las propiedades disponibles. Esta es nuestra base.
     propiedades = Propiedad.objects.filter(esta_disponible=True)
@@ -51,6 +52,11 @@ def lista_propiedades(request):
         # Usamos 'icontains' para buscar texto dentro de la dirección (ignora mayúsculas/minúsculas).
         # Esto es perfecto para búsquedas de barrios o ciudades.
         propiedades = propiedades.filter(direccion__icontains=ubicacion)
+    if precio_min or precio_max:
+        # El rango de precio se interpreta en pesos para Alquiler y en dólares para el resto:
+        # así no se comparan montos de monedas distintas.
+        if estado:
+            propiedades = propiedades.filter(moneda='ARS' if estado == 'Alquiler' else 'USD')
     if precio_min:
         # Filtramos propiedades con precio mayor o igual a...
         propiedades = propiedades.filter(precio__gte=precio_min)
@@ -60,6 +66,9 @@ def lista_propiedades(request):
     if metros_min:
         # Filtramos propiedades con metros cuadrados mayor o igual a...
         propiedades = propiedades.filter(metros_cuadrados__gte=metros_min)
+    if ambientes_min:
+        # Filtramos propiedades con ambientes mayor o igual a... (el filtro que se muestra en Alquiler)
+        propiedades = propiedades.filter(ambientes__gte=ambientes_min)
 
     # --- SEO: Construcción de un título dinámico ---
     titulo_partes = []

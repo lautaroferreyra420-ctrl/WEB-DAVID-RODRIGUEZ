@@ -397,167 +397,325 @@ main {
 
 
 /* ---------------------------------------------------------------- */
-/* COMPONENTE: CAJA DE CONTENIDO TRANSPARENTE (REUTILIZABLE) */
+/* PÁGINA DE CONTACTO */
 /* ---------------------------------------------------------------- */
-.content-box-transparent {
-    position: relative; /* Necesario para que el z-index funcione */
-    z-index: 2; /* Asegura que esté por encima del fondo */
-    /* Efecto "vidrio esmerilado" para la transparencia */
-    background-color: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px; /* Bordes ligeramente redondeados para un look más suave */
-    padding: 30px;
-    max-width: 800px; /* Ancho máximo para el contenido de contacto */
-    margin: 40px auto; /* Centrado y con espacio vertical */
-    color: var(--color-negro); /* CAMBIO: Texto negro para máxima legibilidad */
-    /* text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); Quitamos la sombra, ya no es necesaria */
+.contacto-hero {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--color-blanco);
+    /* Panel oscuro translúcido para que el texto se lea sobre cualquier foto de fondo */
+    background: rgba(15, 15, 15, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 36px 24px 32px;
+    max-width: 720px;
+    margin: 48px auto 0;
 }
 
-/* NUEVO: Layout para la página de contacto con formulario */
-.contact-page-container {
+.contacto-hero .hero-kicker {
+    margin-bottom: 16px;
+}
+
+.contacto-hero h1 {
+    color: var(--color-blanco);
+    margin: 0 0 12px;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+.contacto-hero p {
+    margin: 0;
+    font-size: 1.05rem;
+    opacity: 0.9;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.contacto-pagina {
+    position: relative;
+    z-index: 2;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
-    gap: 40px; /* Espacio entre las columnas */
-    max-width: 1100px; /* Hacemos la caja un poco más ancha */
+    grid-template-columns: 1.1fr 1fr;
+    gap: 28px;
+    align-items: start;
+    max-width: 1100px;
+    margin: 36px auto 60px;
+    padding: 0 20px;
 }
 
-/* NUEVO: Estilos para la lista de contacto con iconos */
-.contact-list {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 30px;
+.contacto-columna {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre los items de contacto */
+    gap: 20px;
 }
 
-.contact-item {
+.canales-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.canal-card {
     display: flex;
     align-items: center;
-    font-size: 1.1em;
-}
-
-.contact-item svg {
-    margin-right: 15px; /* Espacio entre el icono y el texto */
-    fill: var(--color-negro); /* CAMBIO: Usamos fill para los logos */
-    transition: fill 0.2s ease; /* Transición suave para el color de relleno */
-}
-
-/* Ajustamos el color de los enlaces dentro de la lista de contacto */
-.contact-item a {
+    gap: 16px;
+    padding: 16px 18px;
+    background: var(--color-blanco);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.3);
     color: var(--color-negro);
     text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.canal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.4);
+}
+
+.canal-icono {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--color-negro);
+    color: var(--color-blanco);
     display: flex;
     align-items: center;
-    transition: color 0.2s ease;
+    justify-content: center;
+    transition: background-color 0.2s ease;
 }
 
-/* NUEVO: Efecto hover para los enlaces de contacto */
-.contact-item a:hover {
-    color: var(--color-rojo-acento); /* Cambia de color al pasar el mouse */
+.canal-icono svg {
+    width: 22px;
+    height: 22px;
 }
 
-/* NUEVO: Hacemos que el icono también cambie de color en hover */
-.contact-item a:hover svg {
-    fill: var(--color-rojo-acento);
+.canal-card:hover .canal-icono {
+    background: var(--color-rojo-acento);
 }
 
-/* NUEVO: Estilos para el formulario de contacto */
-/* Contenedor para cada campo del formulario y su error */
-.form-field-wrapper {
-    margin-bottom: 15px;
-    position: relative; /* Para posicionar errores si fuera necesario */
+.canal-whatsapp .canal-icono {
+    background: #25d366;
 }
 
-.contact-form label {
-    display: none; /* Ocultamos las etiquetas, los placeholders son suficientes */
+.canal-whatsapp:hover .canal-icono {
+    background: #1da851;
 }
 
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    color: var(--color-blanco);
-    font-family: 'Poppins', sans-serif;
-    font-size: 1em;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+.canal-texto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
 }
 
-.contact-form input::placeholder,
-.contact-form textarea::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-    outline: none;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-color: var(--color-blanco);
-}
-
-.btn-submit-contact {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--color-blanco);
-    color: var(--color-negro);
-    border: none;
-    border-radius: 4px;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    margin-top: 10px;
-}
-
-.btn-submit-contact:hover {
-    background-color: var(--color-gris-claro);
-}
-
-.success-message {
-    font-size: 1.2em;
-    text-align: center;
-}
-
-/* NUEVO: Estilo para los mensajes de error del formulario */
-.form-error {
-    color: var(--color-rojo-acento);
-    font-size: 0.9em;
+.canal-texto small {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-gris-medio);
     font-weight: 500;
-    margin-top: 5px;
-    text-shadow: none; /* Quitamos la sombra de texto para que el rojo sea nítido */
 }
 
-/* NUEVO: Estilos para el contenedor del mapa (ahora integrado) */
-.map-container {
-    margin-top: 30px; /* Espacio sobre el mapa */
-    width: 100%;
+.canal-texto strong {
+    font-size: 1rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
 }
 
-.map-container h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--color-negro); /* Texto negro para que se lea bien */
-    text-align: left;
+.canal-flecha {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--color-gris-medio);
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.canal-card:hover .canal-flecha {
+    transform: translate(2px, -2px);
+    color: var(--color-rojo-acento);
+}
+
+.mapa-card,
+.form-card {
+    background: var(--color-blanco);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.mapa-encabezado {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 18px 22px 14px;
+}
+
+.mapa-encabezado h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.mapa-encabezado span {
+    font-size: 0.85rem;
+    color: var(--color-gris-medio);
 }
 
 .map-responsive {
     overflow: hidden;
-    padding-bottom: 75%; /* Hacemos el mapa un poco más alto (4:3) */
+    padding-bottom: 65%;
     position: relative;
     height: 0;
-    border-radius: 4px; /* Bordes redondeados para el mapa */
 }
 
 .map-responsive iframe {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
+}
+
+.form-card {
+    position: relative;
+    padding: 28px;
+}
+
+/* Tira roja superior: mismo acento que la card de contacto de cada propiedad */
+.form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-rojo-acento);
+}
+
+.form-card h2 {
+    margin: 0 0 6px;
+    font-size: 1.4rem;
+}
+
+.form-card-sub {
+    margin: 0 0 22px;
+    font-size: 0.9rem;
+    color: var(--color-gris-medio);
+    line-height: 1.45;
+}
+
+.form-field-wrapper {
+    margin-bottom: 12px;
+}
+
+.contact-form label {
+    display: none; /* Los placeholders alcanzan */
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 13px 15px;
+    background-color: #f6f6f8;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    color: var(--color-negro);
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.contact-form textarea {
+    resize: vertical;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: #a1a1aa;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    background-color: var(--color-blanco);
+    border-color: var(--color-rojo-acento);
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
+}
+
+.btn-submit-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    margin-top: 6px;
+    background-color: var(--color-negro);
+    color: var(--color-blanco);
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-submit-contact:hover {
+    background-color: var(--color-rojo-acento);
+    transform: translateY(-1px);
+}
+
+.btn-submit-contact svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+}
+
+.btn-submit-contact:hover svg {
+    transform: translateX(3px);
+}
+
+.success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 24px 16px;
+    text-align: center;
+    background-color: #e6f7ed;
+    color: #1a7a3f;
+    border: 1px solid #b8e6c9;
+    border-radius: 12px;
+}
+
+.success-message svg {
+    width: 38px;
+    height: 38px;
+}
+
+.success-message p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.form-error {
+    color: var(--color-rojo-acento);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 5px 0 0 4px;
+}
+
+@media (max-width: 900px) {
+    .contacto-pagina {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ---------------------------------------------------------------- */
@@ -649,7 +807,7 @@ main {
 }
 
 .range-inputs input {
-    width: 80px; /* Ancho fijo para los inputs de precio */
+    width: 100px; /* Ancho fijo para los inputs de precio (entran montos en pesos) */
 }
 
 #btn-aplicar-filtro {
@@ -703,6 +861,7 @@ main {
     height: 34px;
     background-color: var(--color-negro);
     border-radius: 6px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
     transition: transform 0.25s ease, width 0.25s ease;
     pointer-events: none;
     z-index: 0;
@@ -729,6 +888,20 @@ main {
 
 .toggle-btn.activo {
     color: var(--color-blanco);
+}
+
+.filtro-grupo[hidden] {
+    display: none;
+}
+
+/* Animacion suave cuando un filtro cambia de texto o aparece (ej: USD -> $ Pesos) */
+.filtro-cambio {
+    animation: filtro-cambio 0.3s ease;
+}
+
+@keyframes filtro-cambio {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
 }
 
 /* ---------------------------------------------------------------- */
@@ -774,12 +947,6 @@ main {
     }
 
     /* --- Barra de Filtros --- */
-    .contact-page-container {
-        grid-template-columns: 1fr; /* Apilamos las columnas en móvil */
-        gap: 30px;
-        padding: 20px;
-    }
-
     #filter-bar {
         flex-direction: column; /* Apilamos los filtros verticalmente */
         align-items: stretch;   /* Hacemos que ocupen todo el ancho */
@@ -900,10 +1067,10 @@ main {
 /* ---------------------------------------------------------------- */
 .whatsapp-float {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 58px;
-    height: 58px;
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     z-index: 1000;
@@ -1006,15 +1173,17 @@ main {
     background-color: #25D366;
     color: var(--color-blanco);
     text-decoration: none;
-    font-weight: 500;
-    padding: 12px 16px;
-    border-radius: 6px;
-    margin: 16px 0;
-    transition: filter 0.2s ease;
+    font-weight: 600;
+    padding: 13px 16px;
+    border-radius: 10px;
+    margin: 0;
+    box-shadow: 0 6px 14px rgba(37, 211, 102, 0.35);
+    transition: filter 0.2s ease, transform 0.15s ease;
 }
 
 .btn-whatsapp-propiedad:hover {
     filter: brightness(0.95);
+    transform: translateY(-1px);
 }
 
 .btn-whatsapp-propiedad img {
@@ -1154,58 +1323,188 @@ main {
 
 .detalle-contacto {
     position: sticky;
-    top: 20px;
+    top: 90px; /* debajo del header fijo */
 }
 
-.contacto-box {
+.contacto-card {
     background-color: var(--color-blanco);
-    border-radius: 10px;
+    border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
 }
 
-.contacto-box h3 {
-    margin-top: 0;
+/* Tira roja superior, mismo acento que el resto del sitio */
+.contacto-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-rojo-acento);
 }
 
-.contacto-box form {
+.contacto-card-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.contacto-avatar {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-negro);
+    color: var(--color-blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 0 3px var(--color-blanco), 0 0 0 5px var(--color-rojo-acento);
+}
+
+.contacto-card-cabecera h3 {
+    margin: 0 0 3px;
+    font-size: 1.05rem;
+    line-height: 1.25;
+}
+
+.contacto-card-cabecera p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-gris-medio);
+    line-height: 1.35;
+}
+
+.contacto-separador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 14px;
+    color: var(--color-gris-medio);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.contacto-separador::before,
+.contacto-separador::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e6e6ea;
+}
+
+.contacto-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 8px;
+    gap: 10px;
 }
 
-.contacto-box input,
-.contacto-box textarea {
+.contacto-card input,
+.contacto-card textarea {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 12px 14px;
+    background-color: #f6f6f8;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
     font-family: inherit;
+    font-size: 0.92rem;
     box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.contacto-card textarea {
+    resize: vertical;
+}
+
+.contacto-card input:focus,
+.contacto-card textarea:focus {
+    outline: none;
+    background-color: var(--color-blanco);
+    border-color: var(--color-rojo-acento);
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
 }
 
 .btn-contacto-principal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background-color: var(--color-negro);
     color: var(--color-blanco);
     border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: 500;
+    padding: 13px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-contacto-principal:hover {
-    background-color: #333;
+    background-color: var(--color-rojo-acento);
+    transform: translateY(-1px);
 }
 
-.contacto-info {
-    margin-top: 14px;
-    margin-bottom: 0;
-    font-size: 0.9rem;
-    color: var(--color-gris-medio);
-    text-align: center;
+.btn-contacto-principal .icono-svg {
+    margin: 0;
+    transition: transform 0.2s ease;
+}
+
+.btn-contacto-principal:hover .icono-svg {
+    transform: translateX(3px);
+}
+
+.contacto-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+    font-size: 0.82rem;
+}
+
+.contacto-pie a,
+.contacto-pie .btn-copiar-link {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    margin: 0;
+    padding: 6px 4px;
+    border: 0;
+    background: none;
+    color: var(--color-negro);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.contacto-pie a:hover,
+.contacto-pie .btn-copiar-link:hover {
+    color: var(--color-rojo-acento);
+    background: none;
+}
+
+.propiedad-precio small,
+.card-precio-tag small {
+    font-size: 0.65em;
+    font-weight: 500;
+    opacity: 0.8;
 }
 
 @media (max-width: 900px) {

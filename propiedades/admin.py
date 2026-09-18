@@ -38,7 +38,7 @@ class FotoPropiedadInline(admin.TabularInline):
 
 @admin.register(Propiedad)
 class PropiedadAdmin(admin.ModelAdmin):
-    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio', 'esta_disponible', 'destacado', 'fecha_publicacion')
+    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio_formateado', 'esta_disponible', 'destacado', 'fecha_publicacion')
     list_display_links = ('vista_previa', 'direccion')
     list_filter = ('tipo_propiedad', 'estado', 'esta_disponible', 'destacado')
     search_fields = ('direccion', 'descripcion')
@@ -72,7 +72,7 @@ class PropiedadAdmin(admin.ModelAdmin):
             return JsonResponse({'error': 'Método no permitido.'}, status=405)
 
         datos = {campo: request.POST.get(campo, '').strip() for campo in (
-            'direccion', 'tipo_propiedad', 'estado', 'precio',
+            'direccion', 'tipo_propiedad', 'estado', 'precio', 'moneda', 'ambientes',
             'dormitorios', 'banos', 'metros_cuadrados', 'amenidades', 'notas',
         )}
 

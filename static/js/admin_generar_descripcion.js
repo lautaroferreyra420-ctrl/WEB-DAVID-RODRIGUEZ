@@ -50,6 +50,8 @@
                 tipo_propiedad: textoSeleccionado('id_tipo_propiedad'),
                 estado: textoSeleccionado('id_estado'),
                 precio: valorDe('id_precio'),
+                moneda: valorDe('id_moneda'),
+                ambientes: valorDe('id_ambientes'),
                 dormitorios: valorDe('id_dormitorios'),
                 banos: valorDe('id_banos'),
                 metros_cuadrados: valorDe('id_metros_cuadrados'),
