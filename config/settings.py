@@ -144,12 +144,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- CONFIGURACIÓN DE EMAIL PARA PRODUCCIÓN (GMAIL) ---
+# Todo se configura desde el archivo .env (ver .env.example). Sirve para Gmail, Google Workspace o el
+# correo del hosting del dominio: solo cambian EMAIL_HOST, EMAIL_PORT y si se usa TLS o SSL.
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # Carga el email desde el archivo .env
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # Carga la contraseña desde el archivo .env
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'   # puerto 465
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True' and not EMAIL_USE_SSL   # puerto 587
+EMAIL_TIMEOUT = 15
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')          # casilla desde la que se envía
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # su contraseña (o contraseña de aplicación)
 
-# Este es el email que recibirá los mensajes del formulario de contacto.
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Desde qué nombre/casilla salen los mails
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL') or (
+    f'David Rodríguez Propiedades <{EMAIL_HOST_USER}>' if EMAIL_HOST_USER else None
+)
+
+# A dónde llegan las consultas de los formularios (puede ser distinta de la casilla que envía)
+EMAIL_DESTINO_CONSULTAS = os.getenv('EMAIL_DESTINO_CONSULTAS', 'info@davidrodriguezprop.com')

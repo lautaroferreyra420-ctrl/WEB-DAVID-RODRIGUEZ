@@ -2,7 +2,7 @@ import json
 import json
 import logging
 
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.http import Http404
@@ -20,13 +20,22 @@ logger = logging.getLogger(__name__)
 PROPIEDADES_POR_PAGINA = 12
 
 
-def _enviar_email_seguro(asunto, cuerpo, destinatario):
-    """Envía un email sin romper la vista si el servidor de correo no está configurado."""
+def _enviar_email_seguro(asunto, cuerpo, destinatario, responder_a=None):
+    """
+    Envía un email sin romper la vista si el servidor de correo no está configurado o falla.
+    `responder_a` es el email del cliente: así "Responder" en la casilla le contesta a él.
+    """
     if not settings.EMAIL_HOST_USER:
         logger.warning("Email no enviado (EMAIL_HOST_USER no configurado): %s", asunto)
         return
     try:
-        send_mail(asunto, cuerpo, settings.DEFAULT_FROM_EMAIL, [destinatario])
+        EmailMessage(
+            subject=asunto,
+            body=cuerpo,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[destinatario],
+            reply_to=[responder_a] if responder_a else None,
+        ).send(fail_silently=False)
     except Exception:
         logger.exception("Fallo al enviar email: %s", asunto)
 
@@ -161,7 +170,8 @@ def detalle_propiedad(request, pk, slug=None):
                         f"Propiedad: {propiedad.direccion} ({propiedad.get_absolute_url()})\n\n"
                         f"Mensaje:\n{consulta.mensaje}"
                     ),
-                    destinatario=settings.EMAIL_HOST_USER,
+                    destinatario=settings.EMAIL_DESTINO_CONSULTAS,
+                    responder_a=consulta.email,
                 )
             # Mostramos éxito igual si era spam, para no delatarle al bot que lo detectamos.
             mensaje_enviado = True
@@ -206,7 +216,7 @@ def pagina_contacto(request):
                 f"Mensaje:\n{cd['mensaje']}"
             )
 
-            _enviar_email_seguro(asunto, cuerpo_mensaje, settings.EMAIL_HOST_USER)
+            _enviar_email_seguro(asunto, cuerpo_mensaje, settings.EMAIL_DESTINO_CONSULTAS, responder_a=cd['email'])
 
             mensaje_enviado = True
             form = ContactoForm()  # Limpiamos el formulario después de enviar
