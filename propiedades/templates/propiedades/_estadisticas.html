@@ -1,0 +1,12 @@
+{% if estadisticas_sitio %}
+<section class="stats-bar" data-aos="fade-up">
+    <div class="stats-bar-inner">
+        {% for stat in estadisticas_sitio %}
+        <div class="stat-item">
+            <span class="stat-numero" data-valor="{{ stat.numero }}">0</span>
+            <span class="stat-etiqueta">{{ stat.etiqueta }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

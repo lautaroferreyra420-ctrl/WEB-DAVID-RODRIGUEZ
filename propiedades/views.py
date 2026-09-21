@@ -230,4 +230,6 @@ def pagina_contacto(request):
 
 def pagina_nosotros(request):
     """Pagina institucional: quienes somos, vision, mision y servicios."""
-    return render(request, 'propiedades/nosotros.html')
+    return render(request, 'propiedades/nosotros.html', {
+        'estadisticas_sitio': ConfiguracionSitio.obtener().estadisticas(),
+    })

@@ -98,18 +98,7 @@
             </section>
         </div>
 
-        {% if estadisticas_sitio %}
-        <section class="stats-bar" data-aos="fade-up">
-            <div class="stats-bar-inner">
-                {% for stat in estadisticas_sitio %}
-                <div class="stat-item">
-                    <span class="stat-numero" data-valor="{{ stat.numero }}">0</span>
-                    <span class="stat-etiqueta">{{ stat.etiqueta }}</span>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
+        {% include 'propiedades/_estadisticas.html' %}
 
         <!-- 2. Área de Resultados -->
 
@@ -329,40 +318,6 @@
                 }
             });
         });
-
-        // Contador animado de la barra de estadísticas: cuenta desde 0 cuando entra en pantalla
-        const numeros = document.querySelectorAll('.stat-numero');
-        if (numeros.length && 'IntersectionObserver' in window) {
-            const DURACION_MS = 1400;
-
-            function animarNumero(el) {
-                const destino = parseInt(el.dataset.valor, 10) || 0;
-                const inicio = performance.now();
-
-                function frame(ahora) {
-                    const progreso = Math.min((ahora - inicio) / DURACION_MS, 1);
-                    const facilitado = 1 - Math.pow(1 - progreso, 3); // ease-out cubic
-                    el.textContent = Math.round(destino * facilitado).toLocaleString('es-AR');
-                    if (progreso < 1) {
-                        requestAnimationFrame(frame);
-                    } else {
-                        el.textContent = destino.toLocaleString('es-AR');
-                    }
-                }
-                requestAnimationFrame(frame);
-            }
-
-            const observer = new IntersectionObserver(function (entradas) {
-                entradas.forEach(function (entrada) {
-                    if (entrada.isIntersecting) {
-                        animarNumero(entrada.target);
-                        observer.unobserve(entrada.target);
-                    }
-                });
-            }, { threshold: 0.4 });
-
-            numeros.forEach(function (el) { observer.observe(el); });
-        }
     });
 </script>
 {% endblock %}
