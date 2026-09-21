@@ -8,6 +8,7 @@
     const CLAVE_VISTOS = 'dr_vistos';
     const CLAVE_POPUP_HASTA = 'dr_popup_hasta';
     const DIAS_SIN_POPUP = 7;
+    const PROPIEDADES_PARA_POPUP = 5;   // cuántas propiedades distintas tiene que mirar antes de que aparezca la ventana
 
     const $ = (id) => document.getElementById(id);
     const csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
@@ -251,9 +252,9 @@
             almacenamiento('set', CLAVE_VISTOS, vistos);
         }
 
-        // Ventana de novedades: tras ver 2 propiedades distintas, una sola vez cada 7 días, y nunca a quien ya dejó su contacto
+        // Ventana de novedades: tras ver 5 propiedades distintas, una sola vez cada 7 días, y nunca a quien ya dejó su contacto
         const pospuesto = almacenamiento('get', CLAVE_POPUP_HASTA) || 0;
-        if (esInteresado || Date.now() < pospuesto || vistos.ids.length < 2 || !vistos.ultimo) return;
+        if (esInteresado || Date.now() < pospuesto || vistos.ids.length < PROPIEDADES_PARA_POPUP || !vistos.ultimo) return;
         setTimeout(function () {
             if (modalAbierto || esInteresado) return;
             const filtros = {};
