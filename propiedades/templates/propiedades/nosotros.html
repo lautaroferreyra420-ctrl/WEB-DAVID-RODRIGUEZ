@@ -1,0 +1,96 @@
+{% extends 'propiedades/base.html' %}
+{% load static %}
+
+{% block title %}Nosotros - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block meta_description %}
+<meta name="description" content="David Rodriguez Propiedades: más de 10 años de experiencia en el rubro inmobiliario en zona oeste. Búsqueda, tasación y asesoramiento.">
+{% endblock %}
+
+{% block content %}
+
+<section class="pagina-hero" data-aos="fade-up">
+    <span class="hero-kicker">Nosotros</span>
+    <h1>Especialistas en asesoramiento inmobiliario</h1>
+    <p>Somos una empresa con espíritu joven y dinámico, con más de 10 años de experiencia y oficio en el rubro inmobiliario, en zona oeste, especializada en la búsqueda de inmuebles en alquiler o en venta, seleccionados de acuerdo a la ubicación y características pretendidas por los clientes.</p>
+</section>
+
+<div class="nosotros-pagina">
+
+    <section class="nosotros-pilares">
+        <article class="nosotros-card" data-aos="fade-up">
+            <span class="nosotros-icono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </span>
+            <h3>Visión</h3>
+            <p>Trabajar con orgullo en el camino de la excelencia, proyectándonos y creciendo con éxito junto a nuestros clientes, evolucionando para ser la mejor opción en el negocio inmobiliario.</p>
+        </article>
+
+        <article class="nosotros-card" data-aos="fade-up" data-aos-delay="80">
+            <span class="nosotros-icono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </span>
+            <h3>Misión</h3>
+            <p>Radica el compromiso de proteger, fortalecer y satisfacer todas las necesidades propias de cada cliente, asesorándolos con los mejores profesionales a fin de que cualquier operación sea un éxito.</p>
+        </article>
+    </section>
+
+    <section>
+        <h2 class="nosotros-titulo-seccion" data-aos="fade-up">Servicios</h2>
+        <div class="servicios-grid">
+
+            <article class="nosotros-card" data-aos="fade-up">
+                <span class="nosotros-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <h3>Búsqueda</h3>
+                <ul class="lista-servicio">
+                    <li>Necesidades propias de cada cliente</li>
+                    <li>Viviendas en venta</li>
+                    <li>Viviendas en alquiler</li>
+                    <li>Viviendas en permuta</li>
+                </ul>
+            </article>
+
+            <article class="nosotros-card" data-aos="fade-up" data-aos-delay="80">
+                <span class="nosotros-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg>
+                </span>
+                <h3>Tasación</h3>
+                <ul class="lista-servicio">
+                    <li>De lotes</li>
+                    <li>De casas</li>
+                    <li>De PH</li>
+                    <li>De departamentos</li>
+                    <li>Y más</li>
+                </ul>
+            </article>
+
+            <article class="nosotros-card" data-aos="fade-up" data-aos-delay="160">
+                <span class="nosotros-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <h3>Asesoramiento</h3>
+                <ul class="lista-servicio">
+                    <li>Asesoramiento legal y fiscal</li>
+                    <li>Asesoría personalizada</li>
+                    <li>Administración de propiedades</li>
+                </ul>
+            </article>
+        </div>
+    </section>
+
+    <section class="nosotros-cta" data-aos="fade-up">
+        <h2>Puede ponerse en contacto con nosotros en cualquier momento</h2>
+        <div class="nosotros-cta-botones">
+            <a class="btn-cta btn-cta-claro" href="{% url 'contacto' %}">Ir a Contacto</a>
+            <a class="btn-cta btn-cta-wa" href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20hacer%20una%20consulta" target="_blank" rel="noopener">
+                <img src="{% static 'img/whatsapp.svg' %}" alt="">
+                Escribir por WhatsApp
+            </a>
+        </div>
+    </section>
+
+</div>
+
+{% endblock content %}

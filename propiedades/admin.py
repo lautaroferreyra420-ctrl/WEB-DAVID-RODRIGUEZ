@@ -38,11 +38,11 @@ class FotoPropiedadInline(admin.TabularInline):
 
 @admin.register(Propiedad)
 class PropiedadAdmin(admin.ModelAdmin):
-    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio_formateado', 'esta_disponible', 'destacado', 'fecha_publicacion')
+    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio_formateado', 'esta_disponible', 'reservado', 'vendido', 'destacado', 'fecha_publicacion')
     list_display_links = ('vista_previa', 'direccion')
-    list_filter = ('tipo_propiedad', 'estado', 'esta_disponible', 'destacado')
+    list_filter = ('tipo_propiedad', 'estado', 'esta_disponible', 'reservado', 'vendido', 'acepta_permuta', 'apto_credito', 'destacado')
     search_fields = ('direccion', 'descripcion')
-    list_editable = ('esta_disponible', 'destacado')
+    list_editable = ('esta_disponible', 'reservado', 'vendido', 'destacado')
     ordering = ('-fecha_publicacion',)
     prepopulated_fields = {'slug': ('direccion',)}
     inlines = [FotoPropiedadInline]

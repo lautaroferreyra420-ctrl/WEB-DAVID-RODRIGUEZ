@@ -1,4 +1,4 @@
-{% load static %}
+{% load static propiedades_extras %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static_v 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/Logo.png' %}">
     <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock %}</title>
 
@@ -50,6 +50,7 @@
         <div class="main-nav-container">
             <nav>
                 <a href="{% url 'inicio' %}">Inicio</a>
+                <a href="{% url 'nosotros' %}">Nosotros</a>
                 <a href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated and user.is_superuser %}
                     <a href="{% url 'admin:index' %}">Administración</a>
@@ -63,8 +64,33 @@
         {% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; {% now "Y" %} David Rodriguez. Todos los derechos reservados.</p>
+    <footer class="pie-pagina">
+        <div class="pie-contenido">
+            <div class="pie-marca">
+                <img src="{% static 'img/Logo.png' %}" alt="David Rodriguez Propiedades" class="pie-logo">
+                <p>Especialistas en asesoramiento inmobiliario en zona oeste.</p>
+            </div>
+
+            <div>
+                <h4 class="pie-titulo">Navegación</h4>
+                <nav class="pie-nav" aria-label="Pie de página">
+                    <a href="{% url 'inicio' %}">Home</a>
+                    <a href="{% url 'nosotros' %}">Nosotros</a>
+                    <a href="{% url 'inicio' %}#area-resultados">Propiedades</a>
+                    <a href="{% url 'contacto' %}">Contacto</a>
+                </nav>
+            </div>
+
+            <div class="pie-contacto">
+                <h4 class="pie-titulo">Contacto</h4>
+                <ul>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg><span><small>Tel</small> <a href="tel:+541122002755">(011) 2200-2755</a></span></li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg><span><small>Cel</small> <a href="tel:+5491133405963">(011) 3340-5963</a></span></li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span><small>Mail</small> <a href="mailto:info@davidrodriguezprop.com">info@davidrodriguezprop.com</a></span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pie-copy">Copyright &copy; 2018 Todos los derechos reservados.</div>
     </footer>
 
     <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20consultar%20sobre%20una%20propiedad"

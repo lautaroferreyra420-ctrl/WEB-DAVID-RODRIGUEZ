@@ -1,5 +1,6 @@
 # propiedades/models.py
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -62,6 +63,18 @@ class Propiedad(models.Model):
     estado = models.CharField(max_length=50, choices=OPCIONES_ESTADO, default='Venta', verbose_name="Estado") # MODIFICADO: Usamos las nuevas OPCIONES_ESTADO
     esta_disponible = models.BooleanField(default=True, verbose_name="Disponible")
 
+    # --- ETIQUETAS QUE SE MUESTRAN EN LA WEB ---
+    acepta_permuta = models.BooleanField(default=False, verbose_name="Acepta permuta")
+    apto_credito = models.BooleanField(default=False, verbose_name="Apto crédito")
+    reservado = models.BooleanField(
+        default=False, verbose_name="Reservado",
+        help_text="Muestra una banda 'RESERVADA' sobre la foto.",
+    )
+    vendido = models.BooleanField(
+        default=False, verbose_name="Vendido",
+        help_text="Muestra una banda 'VENDIDA' sobre la foto. Si querés que deje de aparecer en la web, desmarcá 'Disponible'.",
+    )
+
     # --- CAMPO AÑADIDO PARA LA BÚSQUEDA AVANZADA (AMENIDADES) ---
     # Usaremos un campo de texto simple para las amenidades por ahora.
     # En un proyecto real se usaría un campo ManyToMany.
@@ -84,6 +97,10 @@ class Propiedad(models.Model):
         """Ej: 'USD 185.000' o '$ 450.000' (punto como separador de miles)."""
         monto = f"{self.precio:,.0f}".replace(",", ".")
         return f"$ {monto}" if self.moneda == 'ARS' else f"USD {monto}"
+
+    def clean(self):
+        if self.reservado and self.vendido:
+            raise ValidationError("Una propiedad no puede estar a la vez reservada y vendida. Marcá solo una.")
 
     def save(self, *args, **kwargs):
         if not self.slug:

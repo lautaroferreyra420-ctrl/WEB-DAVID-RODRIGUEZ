@@ -11,6 +11,7 @@ urlpatterns = [
     # Compatibilidad con enlaces viejos sin slug (redirige a la URL con slug)
     path('<int:pk>/', views.detalle_propiedad, name='detalle_propiedad_sin_slug'),
 
-    # 3. URL PARA LA PÁGINA DE CONTACTO (NUEVO)
+    # 3. PÁGINAS INSTITUCIONALES: NOSOTROS Y CONTACTO
+    path('nosotros/', views.pagina_nosotros, name='nosotros'),
     path('contacto/', views.pagina_contacto, name='contacto'),
 ]

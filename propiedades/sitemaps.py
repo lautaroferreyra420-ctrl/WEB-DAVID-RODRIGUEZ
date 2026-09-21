@@ -9,7 +9,7 @@ class PaginasEstaticasSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return ['inicio', 'contacto']
+        return ['inicio', 'nosotros', 'contacto']
 
     def location(self, item):
         return reverse(item)

@@ -399,7 +399,7 @@ main {
 /* ---------------------------------------------------------------- */
 /* PÁGINA DE CONTACTO */
 /* ---------------------------------------------------------------- */
-.contacto-hero {
+.pagina-hero {
     position: relative;
     z-index: 2;
     text-align: center;
@@ -415,11 +415,11 @@ main {
     margin: 48px auto 0;
 }
 
-.contacto-hero .hero-kicker {
+.pagina-hero .hero-kicker {
     margin-bottom: 16px;
 }
 
-.contacto-hero h1 {
+.pagina-hero h1 {
     color: var(--color-blanco);
     margin: 0 0 12px;
     font-size: clamp(1.8rem, 4vw, 2.6rem);
@@ -427,7 +427,7 @@ main {
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
 }
 
-.contacto-hero p {
+.pagina-hero p {
     margin: 0;
     font-size: 1.05rem;
     opacity: 0.9;
@@ -583,17 +583,6 @@ main {
 .form-card {
     position: relative;
     padding: 28px;
-}
-
-/* Tira roja superior: mismo acento que la card de contacto de cada propiedad */
-.form-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--color-rojo-acento);
 }
 
 .form-card h2 {
@@ -1336,17 +1325,6 @@ main {
     position: relative;
 }
 
-/* Tira roja superior, mismo acento que el resto del sitio */
-.contacto-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--color-rojo-acento);
-}
-
 .contacto-card-cabecera {
     display: flex;
     align-items: center;
@@ -1566,4 +1544,359 @@ main {
     width: 100%;
     height: 100%;
     border: 0;
+}
+/* ---------------------------------------------------------------- */
+/* ETIQUETAS DE PROPIEDAD: VENDIDA / RESERVADA (cinta) + CHIPS */
+/* ---------------------------------------------------------------- */
+.cinta-estado {
+    position: absolute;
+    top: 50%;
+    left: -10%;
+    width: 120%;
+    padding: 9px 0;
+    transform: translateY(-50%) rotate(-8deg);
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--color-blanco);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.cinta-vendida {
+    background: rgba(190, 0, 0, 0.94);
+}
+
+.cinta-reservada {
+    background: rgba(240, 168, 0, 0.96);
+    color: #1a1a1a;
+}
+
+.card-vendida .card-imagen img {
+    filter: grayscale(0.75) brightness(0.85);
+}
+
+.detalle-galeria {
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.detalle-galeria .cinta-estado {
+    font-size: 1.7rem;
+    padding: 14px 0;
+    letter-spacing: 10px;
+}
+
+.chips-propiedad {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 2px 0 10px;
+}
+
+.detalle-header .chips-propiedad {
+    margin: 12px 0 0;
+}
+
+.chip-propiedad {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f3f3f5;
+    border: 1px solid #e4e4e8;
+    color: #333;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.chip-propiedad .icono-svg {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------- */
+/* PÁGINA NOSOTROS */
+/* ---------------------------------------------------------------- */
+.nosotros-pagina {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 36px auto 60px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.nosotros-pilares,
+.servicios-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.nosotros-pilares {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.servicios-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.nosotros-card {
+    background: var(--color-blanco);
+    border-radius: 20px;
+    padding: 26px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 18px 36px -10px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nosotros-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 44px -10px rgba(0, 0, 0, 0.45);
+}
+
+.nosotros-icono {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--color-negro);
+    color: var(--color-blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.nosotros-card:hover .nosotros-icono {
+    background: var(--color-rojo-acento);
+}
+
+.nosotros-icono svg {
+    width: 24px;
+    height: 24px;
+}
+
+.nosotros-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+}
+
+.nosotros-card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.nosotros-titulo-seccion {
+    margin: 0 0 18px;
+    text-align: center;
+    color: var(--color-blanco);
+    font-size: 1.5rem;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.lista-servicio {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lista-servicio li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    color: #333;
+}
+
+.lista-servicio li::before {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-rojo-acento);
+}
+
+.nosotros-cta {
+    text-align: center;
+    color: var(--color-blanco);
+    background: rgba(15, 15, 15, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 36px 24px;
+}
+
+.nosotros-cta h2 {
+    margin: 0 0 20px;
+    font-size: 1.4rem;
+    color: var(--color-blanco);
+}
+
+.nosotros-cta-botones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+}
+
+.btn-cta img {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-cta-claro {
+    background: var(--color-blanco);
+    color: var(--color-negro);
+}
+
+.btn-cta-wa {
+    background: #25d366;
+    color: var(--color-blanco);
+}
+
+@media (max-width: 900px) {
+    .nosotros-pilares,
+    .servicios-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------------------------------------- */
+/* PIE DE PÁGINA */
+/* ---------------------------------------------------------------- */
+.pie-pagina {
+    position: relative;
+    z-index: 2;
+    margin-top: 32px;
+    background: var(--color-negro);
+    color: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid var(--color-rojo-acento);
+}
+
+.pie-contenido {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 22px 20px 14px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.3fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.pie-logo {
+    height: 30px;
+    width: auto;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.pie-marca p {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.pie-titulo {
+    margin: 0 0 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--color-blanco);
+}
+
+.pie-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.pie-nav a {
+    font-size: 0.78rem;
+    letter-spacing: 0.8px;
+}
+
+.pie-contacto ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.pie-contacto li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+}
+
+.pie-contacto li svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    color: var(--color-rojo-acento);
+}
+
+.pie-contacto a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.pie-contacto a:hover {
+    color: var(--color-blanco);
+}
+
+.pie-contacto small {
+    color: rgba(255, 255, 255, 0.55);
+    margin-right: 4px;
+}
+
+.pie-copy {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 9px 20px;
+    text-align: center;
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 768px) {
+    .pie-contenido {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 }

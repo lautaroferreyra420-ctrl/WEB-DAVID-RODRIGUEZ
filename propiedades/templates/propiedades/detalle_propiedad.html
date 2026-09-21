@@ -27,6 +27,12 @@
         <header class="detalle-header" data-aos="fade-up">
             <h1 class="propiedad-titulo">{{ propiedad.direccion }}</h1>
             <p class="propiedad-precio">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</p>
+            {% if propiedad.acepta_permuta or propiedad.apto_credito %}
+            <div class="chips-propiedad">
+                {% if propiedad.acepta_permuta %}<span class="chip-propiedad">{% icono "permuta" %} Acepta permuta</span>{% endif %}
+                {% if propiedad.apto_credito %}<span class="chip-propiedad">{% icono "credito" %} Apto crédito</span>{% endif %}
+            </div>
+            {% endif %}
         </header>
 
         <section class="detalle-galeria" data-aos="fade-up">
@@ -35,6 +41,11 @@
             </a>
             {% if propiedad.destacado %}
                 <span class="detalle-etiqueta-destacada">PROPIEDAD DESTACADA</span>
+            {% endif %}
+            {% if propiedad.vendido %}
+                <span class="cinta-estado cinta-vendida">Vendida</span>
+            {% elif propiedad.reservado %}
+                <span class="cinta-estado cinta-reservada">Reservada</span>
             {% endif %}
         </section>
 

@@ -187,3 +187,8 @@ def pagina_contacto(request):
 
     context = {'form': form, 'mensaje_enviado': mensaje_enviado}
     return render(request, 'propiedades/contacto.html', context)
+
+
+def pagina_nosotros(request):
+    """Pagina institucional: quienes somos, vision, mision y servicios."""
+    return render(request, 'propiedades/nosotros.html')

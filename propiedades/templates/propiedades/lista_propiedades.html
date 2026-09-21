@@ -197,7 +197,7 @@
 
                 <div class="propiedades-grid">
                     {% for propiedad in propiedades %}
-                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
+                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}{% if propiedad.vendido %} card-vendida{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
                              {% if propiedad.video_url %}data-video-preview="{{ propiedad.video_url|preview_embed_url }}"{% endif %}>
 
                         <div class="card-imagen">
@@ -212,11 +212,24 @@
                                 <span class="etiqueta-video">▶ Video</span>
                             {% endif %}
 
+                            {% if propiedad.vendido %}
+                                <span class="cinta-estado cinta-vendida">Vendida</span>
+                            {% elif propiedad.reservado %}
+                                <span class="cinta-estado cinta-reservada">Reservada</span>
+                            {% endif %}
+
                             <span class="card-precio-tag">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</span>
                         </div>
 
                         <div class="card-detalles">
                             <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
+
+                            {% if propiedad.acepta_permuta or propiedad.apto_credito %}
+                            <div class="chips-propiedad">
+                                {% if propiedad.acepta_permuta %}<span class="chip-propiedad">{% icono "permuta" %} Acepta permuta</span>{% endif %}
+                                {% if propiedad.apto_credito %}<span class="chip-propiedad">{% icono "credito" %} Apto crédito</span>{% endif %}
+                            </div>
+                            {% endif %}
 
                             <div class="card-specs">
                                 <span>{% icono "cama" %} {{ propiedad.dormitorios }}</span>
