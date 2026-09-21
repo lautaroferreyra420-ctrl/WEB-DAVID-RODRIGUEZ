@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+{% if add %}
+{% include "admin/propiedades/propiedad/_importar_link.html" %}
+{% endif %}
+{{ block.super }}
+{% endblock %}

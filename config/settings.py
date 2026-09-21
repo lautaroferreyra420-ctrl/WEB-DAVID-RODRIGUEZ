@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'propiedades.context_processors.whatsapp',
+                'propiedades.context_processors.seguimiento',
             ],
         },
     },

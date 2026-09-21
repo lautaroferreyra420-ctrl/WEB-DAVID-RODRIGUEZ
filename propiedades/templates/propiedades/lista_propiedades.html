@@ -191,8 +191,13 @@
         <div class="main-container">
             <main id="area-resultados">
                 <div class="resultados-encabezado">
+                    <div>
                     <h2>{{ titulo_seo }}</h2>
                     <p class="conteo-resultados">Encontramos <strong>{{ total_propiedades }}</strong> inmueble{{ total_propiedades|pluralize }} disponible{{ total_propiedades|pluralize }}.</p>
+                    </div>
+                    <button type="button" class="btn-alerta" data-alerta>
+                        {% icono "campana" %} Avisame de propiedades como estas
+                    </button>
                 </div>
 
                 <div class="propiedades-grid">
@@ -217,6 +222,11 @@
                             {% elif propiedad.reservado %}
                                 <span class="cinta-estado cinta-reservada">Reservada</span>
                             {% endif %}
+
+                            <button type="button" class="btn-guardar{% if propiedad.pk in dr_favoritos_ids %} guardado{% endif %}"
+                                    data-guardar="{{ propiedad.pk }}" aria-label="Guardar propiedad" aria-pressed="{% if propiedad.pk in dr_favoritos_ids %}true{% else %}false{% endif %}">
+                                {% icono "corazon" %}
+                            </button>
 
                             <span class="card-precio-tag">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</span>
                         </div>

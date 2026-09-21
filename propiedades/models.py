@@ -58,6 +58,11 @@ class Propiedad(models.Model):
     metros_cuadrados = models.IntegerField(default=0, verbose_name="M² Construidos")
     banos = models.IntegerField(default=1, verbose_name="Baños")
     
+    link_origen = models.URLField(
+        max_length=500, blank=True, verbose_name="Link de origen",
+        help_text="Se completa solo cuando la propiedad se importa desde un link. Evita importarla dos veces.",
+    )
+
     # --- CAMPOS DE ESTADO Y FILTRO ---
     tipo_propiedad = models.CharField(max_length=50, choices=OPCIONES_TIPO, default='Casa', verbose_name="Tipo")
     estado = models.CharField(max_length=50, choices=OPCIONES_ESTADO, default='Venta', verbose_name="Estado") # MODIFICADO: Usamos las nuevas OPCIONES_ESTADO
@@ -222,6 +227,15 @@ class ConfiguracionSitio(ModeloSingleton):
     estadistica_3_numero = models.PositiveIntegerField(blank=True, null=True, verbose_name="Estadística 3: número")
     estadistica_3_etiqueta = models.CharField(max_length=60, blank=True, default='', verbose_name="Estadística 3: etiqueta")
 
+    # Datos que aparecen en la Política de privacidad
+    razon_social = models.CharField(max_length=150, blank=True, verbose_name="Razón social")
+    cuit = models.CharField(max_length=20, blank=True, verbose_name="CUIT")
+    domicilio_legal = models.CharField(max_length=200, blank=True, verbose_name="Domicilio legal")
+    email_privacidad = models.EmailField(
+        blank=True, verbose_name="Email para consultas de privacidad",
+        help_text="Donde las personas piden ver, corregir o borrar sus datos. Si lo dejás vacío se usa info@davidrodriguezprop.com.",
+    )
+
     class Meta:
         verbose_name = "Configuración del sitio"
         verbose_name_plural = "Configuración del sitio"
@@ -241,3 +255,6 @@ class ConfiguracionSitio(ModeloSingleton):
             for numero, etiqueta in candidatas
             if numero is not None
         ]
+
+
+from .models_interesados import *  # noqa: E402,F401,F403

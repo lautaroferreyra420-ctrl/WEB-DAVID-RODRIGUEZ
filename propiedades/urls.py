@@ -1,6 +1,6 @@
 # propiedades/urls.py
 from django.urls import path
-from . import views
+from . import views, interesados_views
 
 urlpatterns = [
     # 1. URL PRINCIPAL (Ahora maneja la lista Y la búsqueda/filtros)
@@ -14,4 +14,10 @@ urlpatterns = [
     # 3. PÁGINAS INSTITUCIONALES: NOSOTROS Y CONTACTO
     path('nosotros/', views.pagina_nosotros, name='nosotros'),
     path('contacto/', views.pagina_contacto, name='contacto'),
+
+    # 4. INTERESADOS: alta con consentimiento, guardados, baja y política de privacidad
+    path('interesados/registrar/', interesados_views.registrar, name='interesados_registrar'),
+    path('interesados/favorito/<int:pk>/', interesados_views.alternar_favorito, name='interesados_favorito'),
+    path('baja/<uuid:token>/', interesados_views.baja, name='interesados_baja'),
+    path('privacidad/', interesados_views.privacidad, name='privacidad'),
 ]

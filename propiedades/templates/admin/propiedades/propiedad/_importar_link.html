@@ -1,0 +1,22 @@
+<div class="importar-link" id="importar-link" data-url="{% url 'admin:propiedades_propiedad_importar_desde_link' %}">
+    <div class="importar-link-encabezado">
+        <strong>Importar desde un link</strong>
+        <span>Pegá el link de la publicación (Argencasas, Zonaprop, tu web vieja...) y se completan solos los datos, las fotos y la descripción con IA.</span>
+    </div>
+    <form class="importar-link-form" autocomplete="off">
+        {% csrf_token %}
+        <input type="url" name="link" placeholder="https://www.argencasas.com/motor/ficha.php?code=..." required>
+        <select name="max_fotos" aria-label="Cantidad de fotos a importar">
+            <option value="5">5 fotos</option>
+            <option value="8" selected>8 fotos</option>
+            <option value="12">12 fotos</option>
+            <option value="20">20 fotos</option>
+        </select>
+        <button type="submit" class="importar-link-boton">Importar y autocompletar</button>
+    </form>
+    <label class="importar-link-publicar">
+        <input type="checkbox" name="publicar_check" id="importar-publicar">
+        Publicar directamente (si no, queda como borrador para que la revises)
+    </label>
+    <p class="importar-link-estado" id="importar-estado" role="status" hidden></p>
+</div>

@@ -1,0 +1,53 @@
+{% load static propiedades_extras %}
+<div id="dr-config" hidden
+     data-url-registrar="{% url 'interesados_registrar' %}"
+     data-url-favorito="{% url 'interesados_favorito' 0 %}"
+     data-es-interesado="{% if dr_es_interesado %}1{% else %}0{% endif %}"></div>
+
+<!-- Aviso de cookies -->
+<div id="dr-cookies" class="dr-cookies" role="region" aria-label="Aviso de cookies" hidden>
+    <p>
+        Usamos cookies para que la web funcione y, si aceptás, para conocer qué propiedades te interesan y avisarte de novedades.
+        <a href="{% url 'privacidad' %}">Política de privacidad y cookies</a>
+    </p>
+    <div class="dr-cookies-botones">
+        <button type="button" class="dr-btn dr-btn-claro" data-cookies="necessary">Solo necesarias</button>
+        <button type="button" class="dr-btn dr-btn-oscuro" data-cookies="all">Aceptar</button>
+    </div>
+</div>
+
+<!-- Ventana para dejar el contacto (guardar propiedad, alertas, novedades) -->
+<div id="dr-modal" class="dr-modal" hidden>
+    <div class="dr-modal-fondo" data-cerrar></div>
+    <div class="dr-modal-caja" role="dialog" aria-modal="true" aria-labelledby="dr-modal-titulo">
+        <button type="button" class="dr-cerrar" data-cerrar aria-label="Cerrar">&times;</button>
+
+        <div id="dr-modal-formulario">
+            <span class="dr-modal-icono" id="dr-modal-icono" aria-hidden="true"></span>
+            <h2 id="dr-modal-titulo"></h2>
+            <p id="dr-modal-texto" class="dr-modal-texto"></p>
+            <p id="dr-modal-resumen" class="dr-modal-resumen" hidden></p>
+
+            <form id="dr-form" novalidate>
+                <input type="text" name="website" class="dr-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <input type="email" name="email" placeholder="Tu email" autocomplete="email">
+                <input type="tel" name="telefono" placeholder="o tu WhatsApp (con código de área)" autocomplete="tel">
+                <label class="dr-consentimiento">
+                    <input type="checkbox" name="acepta">
+                    <span>{{ dr_texto_consentimiento }}
+                        <a href="{% url 'privacidad' %}" target="_blank" rel="noopener">Más información</a></span>
+                </label>
+                <p id="dr-error" class="dr-error" role="alert" hidden></p>
+                <button type="submit" id="dr-enviar" class="dr-btn dr-btn-rojo">Quiero recibir novedades</button>
+            </form>
+        </div>
+
+        <div id="dr-modal-ok" class="dr-modal-ok" hidden>
+            <span class="dr-modal-icono dr-ok-icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m22 4-10 10-3-3"/></svg>
+            </span>
+            <h2>¡Listo!</h2>
+            <p id="dr-ok-texto" class="dr-modal-texto"></p>
+        </div>
+    </div>
+</div>

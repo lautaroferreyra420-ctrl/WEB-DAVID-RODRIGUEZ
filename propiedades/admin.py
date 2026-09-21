@@ -1,11 +1,19 @@
-from django.contrib import admin
-from django.http import JsonResponse
+import csv
+from urllib.parse import quote
+
+from django.contrib import admin, messages
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import path, reverse
+from django.utils import timezone
 from django.utils.html import format_html
 
 from .ai import generar_descripcion, GeneracionDescripcionError
-from .models import Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio
+from .importador import ImportacionError, importar_propiedad
+from .models import (
+    Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio,
+    Interesado, Favorito, AlertaBusqueda,
+)
 
 
 class ModeloSingletonAdminMixin:
@@ -48,8 +56,8 @@ class PropiedadAdmin(admin.ModelAdmin):
     inlines = [FotoPropiedadInline]
 
     class Media:
-        css = {'all': ('css/admin_generar_descripcion.css',)}
-        js = ('js/admin_generar_descripcion.js',)
+        css = {'all': ('css/admin_generar_descripcion.css', 'css/admin_importar_link.css')}
+        js = ('js/admin_generar_descripcion.js', 'js/admin_importar_link.js')
 
     def vista_previa(self, obj):
         if obj.imagen:
@@ -64,8 +72,38 @@ class PropiedadAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.generar_descripcion_ia_view),
                 name='propiedades_propiedad_generar_descripcion_ia',
             ),
+            path(
+                'importar-desde-link/',
+                self.admin_site.admin_view(self.importar_desde_link_view),
+                name='propiedades_propiedad_importar_desde_link',
+            ),
         ]
         return urls + super().get_urls()
+
+    def importar_desde_link_view(self, request):
+        if request.method != 'POST':
+            return JsonResponse({'error': 'Método no permitido.'}, status=405)
+        if not self.has_add_permission(request):
+            return JsonResponse({'error': 'No tenés permiso para agregar propiedades.'}, status=403)
+
+        try:
+            propiedad, avisos = importar_propiedad(
+                request.POST.get('link', ''),
+                publicar=request.POST.get('publicar') == 'on',
+                max_fotos=request.POST.get('max_fotos') or 8,
+            )
+        except ImportacionError as exc:
+            return JsonResponse({'error': str(exc)}, status=400)
+
+        estado = "publicada" if propiedad.esta_disponible else "guardada como borrador (no se ve en la web hasta que la marques como Disponible)"
+        messages.success(
+            request,
+            f"Importé «{propiedad.direccion}» con {propiedad.fotos.count() + (1 if propiedad.imagen else 0)} foto(s) y descripción con IA. "
+            f"Quedó {estado}. Revisá los datos antes de publicar.",
+        )
+        for aviso in avisos:
+            messages.warning(request, aviso)
+        return JsonResponse({'ok': True, 'url': reverse('admin:propiedades_propiedad_change', args=[propiedad.pk])})
 
     def generar_descripcion_ia_view(self, request):
         if request.method != 'POST':
@@ -106,4 +144,173 @@ class ConfiguracionSitioAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
         ('Estadística 1', {'fields': ('estadistica_1_numero', 'estadistica_1_etiqueta')}),
         ('Estadística 2', {'fields': ('estadistica_2_numero', 'estadistica_2_etiqueta')}),
         ('Estadística 3', {'fields': ('estadistica_3_numero', 'estadistica_3_etiqueta')}),
+        ('Datos legales (Política de privacidad)', {
+            'description': 'Aparecen en la página /privacidad/. Completalos con los datos reales de la inmobiliaria.',
+            'fields': ('razon_social', 'cuit', 'domicilio_legal', 'email_privacidad'),
+        }),
     )
+
+
+# ---------------------------------------------------------------- Interesados
+
+class FavoritoInline(admin.TabularInline):
+    model = Favorito
+    extra = 0
+    fields = ('propiedad', 'creado')
+    readonly_fields = ('propiedad', 'creado')
+    verbose_name_plural = "Propiedades que guardó"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+class AlertaBusquedaInline(admin.TabularInline):
+    model = AlertaBusqueda
+    extra = 0
+    fields = ('descripcion', 'activa', 'creado', 'ultimo_envio')
+    readonly_fields = ('descripcion', 'creado', 'ultimo_envio')
+    verbose_name_plural = "Búsquedas que quiere vigilar"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+class PropiedadVistaFilter(admin.SimpleListFilter):
+    title = "vio la propiedad"
+    parameter_name = 'vio'
+
+    def lookups(self, request, model_admin):
+        return [(p.pk, p.direccion[:50]) for p in Propiedad.objects.order_by('direccion')[:200]]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(visitantes__visitas__propiedad_id=self.value()).distinct()
+        return queryset
+
+
+class TemperaturaFilter(admin.SimpleListFilter):
+    title = "temperatura"
+    parameter_name = 'temperatura'
+
+    def lookups(self, request, model_admin):
+        return [('caliente', 'Caliente'), ('tibio', 'Tibio'), ('frio', 'Frío')]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            ids = [i.pk for i in queryset if i.temperatura() == self.value()]
+            return queryset.filter(pk__in=ids)
+        return queryset
+
+
+@admin.register(Interesado)
+class InteresadoAdmin(admin.ModelAdmin):
+    list_display = ('contacto', 'temperatura_visual', 'origen', 'vio', 'guardo', 'busquedas', 'permiso', 'estado', 'ultima_actividad', 'escribirle')
+    list_editable = ('estado',)
+    list_filter = (TemperaturaFilter, PropiedadVistaFilter, 'estado', 'origen', 'acepta_novedades', 'baja')
+    search_fields = ('nombre', 'email', 'telefono')
+    date_hierarchy = 'creado'
+    inlines = [FavoritoInline, AlertaBusquedaInline]
+    actions = ['exportar_csv', 'marcar_contactado']
+    fieldsets = (
+        ('Contacto', {'fields': ('nombre', 'email', 'telefono', 'estado', 'notas')}),
+        ('Qué miró', {'fields': ('historial',)}),
+        ('Permiso para escribirle', {'fields': (
+            'origen', 'acepta_novedades', 'fecha_consentimiento', 'consentimiento_texto', 'consentimiento_ip',
+            'baja', 'fecha_baja', 'creado', 'ultima_actividad',
+        )}),
+    )
+    readonly_fields = (
+        'historial', 'origen', 'acepta_novedades', 'fecha_consentimiento', 'consentimiento_texto',
+        'consentimiento_ip', 'baja', 'fecha_baja', 'creado', 'ultima_actividad',
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('visitantes__visitas__propiedad', 'favoritos', 'alertas')
+
+    @admin.display(description="Contacto", ordering='nombre')
+    def contacto(self, obj):
+        partes = [p for p in (obj.nombre, obj.email, obj.telefono) if p]
+        return format_html('<strong>{}</strong>', partes[0]) if len(partes) == 1 else format_html(
+            '<strong>{}</strong><br><span style="color:#777">{}</span>', partes[0], ' · '.join(partes[1:]),
+        )
+
+    @admin.display(description="Temperatura")
+    def temperatura_visual(self, obj):
+        etiqueta, color = {
+            'caliente': ('Caliente', '#d61f1f'),
+            'tibio': ('Tibio', '#e8a100'),
+            'frio': ('Frío', '#6b7a8c'),
+        }[obj.temperatura()]
+        return format_html(
+            '<span style="background:{};color:#fff;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600">{}</span>',
+            color, etiqueta,
+        )
+
+    @admin.display(description="Vio")
+    def vio(self, obj):
+        visitas = obj.visitas()
+        return f"{len(visitas)} prop. ({sum(v.veces for v in visitas)} visitas)" if visitas else "—"
+
+    @admin.display(description="Guardó")
+    def guardo(self, obj):
+        return len(obj.favoritos.all()) or "—"
+
+    @admin.display(description="Alertas")
+    def busquedas(self, obj):
+        return len([a for a in obj.alertas.all() if a.activa]) or "—"
+
+    @admin.display(description="Permiso", boolean=True)
+    def permiso(self, obj):
+        return obj.puede_recibir_novedades()
+
+    @admin.display(description="Escribirle")
+    def escribirle(self, obj):
+        enlaces = []
+        vistas = sorted(obj.visitas(), key=lambda v: v.ultima, reverse=True)
+        saludo = f"Hola{' ' + obj.nombre if obj.nombre else ''}, te escribimos de David Rodríguez Propiedades."
+        if vistas:
+            saludo += f" Vimos que te interesó la propiedad en {vistas[0].propiedad.direccion}. ¿Querés que te pasemos más información?"
+        numero = obj.telefono_whatsapp()
+        if numero:
+            enlaces.append(format_html('<a href="https://wa.me/{}?text={}" target="_blank" rel="noopener">WhatsApp</a>', numero, quote(saludo)))
+        if obj.email:
+            enlaces.append(format_html('<a href="mailto:{}?subject={}">Mail</a>', obj.email, quote("David Rodríguez Propiedades")))
+        return format_html(' · '.join(['{}'] * len(enlaces)), *enlaces) if enlaces else "—"
+
+    @admin.display(description="Propiedades que miró")
+    def historial(self, obj):
+        visitas = sorted(obj.visitas(), key=lambda v: (v.veces, v.ultima), reverse=True)
+        if not visitas:
+            return "Todavía no hay recorrido registrado (solo se registra si la persona aceptó las cookies)."
+        filas = ''.join(
+            format_html(
+                '<tr><td><a href="{}">{}</a></td><td style="text-align:center">{}</td><td>{:%d/%m/%Y %H:%M}</td></tr>',
+                reverse('admin:propiedades_propiedad_change', args=[v.propiedad_id]),
+                v.propiedad.direccion, v.veces, timezone.localtime(v.ultima),
+            )
+            for v in visitas
+        )
+        from django.utils.safestring import mark_safe
+        return mark_safe(
+            '<table><thead><tr><th>Propiedad</th><th>Veces</th><th>Última visita</th></tr></thead><tbody>' + filas + '</tbody></table>'
+        )
+
+    @admin.action(description="Exportar los seleccionados a Excel (CSV)")
+    def exportar_csv(self, request, queryset):
+        respuesta = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+        respuesta['Content-Disposition'] = 'attachment; filename="interesados.csv"'
+        escritor = csv.writer(respuesta, delimiter=';')
+        escritor.writerow(['Nombre', 'Email', 'Teléfono', 'Cómo llegó', 'Temperatura', 'Permiso novedades', 'Baja', 'Propiedades que miró', 'Alta'])
+        for i in queryset:
+            escritor.writerow([
+                i.nombre, i.email, i.telefono, i.get_origen_display(), i.temperatura(),
+                'Sí' if i.acepta_novedades else 'No', 'Sí' if i.baja else 'No',
+                ' | '.join(f"{v.propiedad.direccion} ({v.veces})" for v in i.visitas()),
+                i.creado.strftime('%d/%m/%Y'),
+            ])
+        return respuesta
+
+    @admin.action(description="Marcar como contactados")
+    def marcar_contactado(self, request, queryset):
+        cantidad = queryset.update(estado='contactado')
+        self.message_user(request, f"{cantidad} interesado(s) marcados como contactados.")

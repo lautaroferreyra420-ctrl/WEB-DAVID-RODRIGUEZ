@@ -33,6 +33,11 @@
                 {% if propiedad.apto_credito %}<span class="chip-propiedad">{% icono "credito" %} Apto crédito</span>{% endif %}
             </div>
             {% endif %}
+            <button type="button" class="btn-guardar btn-guardar-detalle{% if propiedad.pk in dr_favoritos_ids %} guardado{% endif %}"
+                    data-guardar="{{ propiedad.pk }}" aria-pressed="{% if propiedad.pk in dr_favoritos_ids %}true{% else %}false{% endif %}">
+                {% icono "corazon" %} <span class="btn-guardar-texto">{% if propiedad.pk in dr_favoritos_ids %}Guardada{% else %}Guardar{% endif %}</span>
+            </button>
+            <div id="dr-ctx" hidden data-propiedad-id="{{ propiedad.pk }}" data-estado="{{ propiedad.estado }}" data-tipo="{{ propiedad.tipo_propiedad }}"></div>
         </header>
 
         <section class="detalle-galeria{% if propiedad.vendido %} galeria-vendida{% elif propiedad.reservado %} galeria-reservada{% endif %}" data-aos="fade-up">

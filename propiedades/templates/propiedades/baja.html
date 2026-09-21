@@ -1,0 +1,21 @@
+{% extends 'propiedades/base.html' %}
+
+{% block title %}Darme de baja - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block content %}
+<section class="pagina-legal pagina-baja">
+    {% if listo %}
+        <h1>Listo, ya no vas a recibir novedades</h1>
+        <p>Te dimos de baja y cancelamos tus alertas. Si fue un error, podés volver a suscribirte cuando quieras desde cualquier propiedad de la web.</p>
+        <a class="btn-cta btn-cta-claro" href="{% url 'inicio' %}">Volver a la web</a>
+    {% else %}
+        <h1>¿Querés dejar de recibir novedades?</h1>
+        <p>Vamos a dejar de enviarte alertas y mensajes de David Rodríguez Propiedades{% if interesado.email %} a <strong>{{ interesado.email }}</strong>{% endif %}.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="dr-btn dr-btn-oscuro">Sí, darme de baja</button>
+            <a class="dr-btn dr-btn-claro" href="{% url 'inicio' %}">Cancelar</a>
+        </form>
+    {% endif %}
+</section>
+{% endblock content %}

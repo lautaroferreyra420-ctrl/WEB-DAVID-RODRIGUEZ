@@ -1,0 +1,76 @@
+.importar-link {
+    margin: 0 0 20px;
+    padding: 16px 18px;
+    background: var(--darkened-bg, #f6f6f8);
+    border: 1px solid var(--hairline-color, #ddd);
+    border-left: 4px solid #ff0000;
+    border-radius: 6px;
+}
+
+.importar-link-encabezado {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.importar-link-encabezado span {
+    font-size: 12px;
+    color: var(--body-quiet-color, #666);
+}
+
+.importar-link-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.importar-link-form input[type="url"] {
+    flex: 1 1 340px;
+    min-width: 240px;
+    padding: 8px 10px;
+}
+
+.importar-link-boton {
+    padding: 8px 16px;
+    background: #1a1a1a;
+    color: #fff;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.importar-link-boton:hover {
+    background: #ff0000;
+}
+
+.importar-link-boton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.importar-link-publicar {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--body-quiet-color, #666);
+}
+
+.importar-link-estado {
+    margin: 12px 0 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: #fff;
+    border: 1px solid var(--hairline-color, #ddd);
+}
+
+.importar-link-estado.es-error {
+    color: #b00020;
+    border-color: #b00020;
+}
+
+.importar-link-estado[hidden] {
+    display: none;
+}

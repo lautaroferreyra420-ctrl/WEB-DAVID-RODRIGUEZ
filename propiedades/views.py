@@ -3,10 +3,12 @@ import logging
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Propiedad, ConfiguracionSitio
 from .forms import ContactoForm, ConsultaPropiedadForm
+from .seguimiento import registrar_consulta_como_interesado, registrar_visita
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +117,8 @@ def detalle_propiedad(request, pk, slug=None):
     plantilla para mostrar todos sus detalles y procesa la consulta del interesado.
     """
     propiedad = get_object_or_404(Propiedad, pk=pk)
+    if not propiedad.esta_disponible and not request.user.is_staff:
+        raise Http404  # los borradores solo los ve el equipo
 
     # Si el slug de la URL no coincide (o falta), redirigimos a la URL canónica.
     if slug != propiedad.slug:
@@ -129,6 +133,7 @@ def detalle_propiedad(request, pk, slug=None):
                 consulta = form.save(commit=False)
                 consulta.propiedad = propiedad
                 consulta.save()
+                registrar_consulta_como_interesado(request, consulta.nombre, consulta.email)
 
                 _enviar_email_seguro(
                     asunto=f"Consulta por propiedad: {propiedad.direccion}",
@@ -153,7 +158,10 @@ def detalle_propiedad(request, pk, slug=None):
     }
 
     # 3. Renderizamos la plantilla de detalle.
-    return render(request, 'propiedades/detalle_propiedad.html', context)
+    respuesta = render(request, 'propiedades/detalle_propiedad.html', context)
+    if request.method == 'GET':
+        registrar_visita(request, respuesta, propiedad)  # solo si el visitante aceptó las cookies
+    return respuesta
 
 
 def pagina_contacto(request):
@@ -169,6 +177,9 @@ def pagina_contacto(request):
         if form.is_valid() and not form.es_spam():
             # Si el formulario es válido, enviamos el correo
             cd = form.cleaned_data
+            registrar_consulta_como_interesado(
+                request, cd['nombre'], cd['email'], cd.get('telefono', ''), origen='contacto',
+            )
             asunto = f"Nuevo mensaje de contacto de {cd['nombre']}"
             cuerpo_mensaje = (
                 f"Nombre: {cd['nombre']}\n"
