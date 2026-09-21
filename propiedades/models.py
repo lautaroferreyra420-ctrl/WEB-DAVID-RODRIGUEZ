@@ -86,7 +86,7 @@ class Propiedad(models.Model):
     amenidades = models.TextField(default='', blank=True, verbose_name="Amenidades (separadas por coma)")
     
     # --- CAMPO AÑADIDO PARA UI (DESTACADO) ---
-    destacado = models.BooleanField(default=False, verbose_name="Propiedad Destacada (Rojo en UI)")
+    destacado = models.BooleanField(default=False, verbose_name="Destacada")
     
     # Campos de Tiempo
     fecha_publicacion = models.DateTimeField(default=timezone.now, verbose_name="Fecha de Publicación")

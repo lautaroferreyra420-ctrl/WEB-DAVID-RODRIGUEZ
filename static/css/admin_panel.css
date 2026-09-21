@@ -1,0 +1,87 @@
+/* Panel de administración: estilos propios sobre django-unfold (usa sus variables de color) */
+
+.dr-panel { display: flex; flex-direction: column; gap: 22px; }
+
+.dr-panel-saludo { margin: 0; color: var(--color-base-400); font-size: 0.95rem; }
+
+.dr-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.dr-kpi {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--color-base-800);
+    background: var(--color-base-900);
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.dr-kpi:hover { transform: translateY(-2px); border-color: var(--color-primary-600); }
+.dr-kpi-icono { position: absolute; top: 16px; right: 16px; font-size: 26px !important; color: var(--color-primary-500); }
+.dr-kpi-valor { font-size: 2.2rem; font-weight: 700; line-height: 1.1; color: var(--color-base-50); }
+.dr-kpi-titulo { font-size: 0.85rem; color: var(--color-base-400); }
+
+.dr-acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.dr-accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--color-base-700);
+    background: transparent;
+    color: var(--color-base-100);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dr-accion:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); color: #fff; }
+.dr-accion .material-symbols-outlined { font-size: 20px; }
+
+.dr-columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+
+.dr-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+
+.dr-lista li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-base-800);
+}
+
+.dr-lista li:last-child { border-bottom: 0; }
+.dr-lista li div { display: flex; flex-direction: column; min-width: 0; }
+.dr-lista strong { color: var(--color-base-50); font-weight: 600; }
+.dr-lista span { color: var(--color-base-400); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dr-lista small { color: var(--color-base-500); flex: none; }
+
+.dr-wa {
+    flex: none;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #25d366;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dr-ver-todo { display: inline-block; margin-top: 12px; font-size: 0.85rem; color: var(--color-primary-400); }
+.dr-vacio { margin: 0; color: var(--color-base-400); font-size: 0.88rem; }
+
+/* Tabla del historial de visitas dentro de la ficha de un interesado */
+.dr-tabla { width: 100%; border-collapse: collapse; }
+.dr-tabla th, .dr-tabla td { padding: 8px 12px; border-bottom: 1px solid var(--color-base-800); text-align: left; }
+.dr-tabla th { color: var(--color-base-400); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; }

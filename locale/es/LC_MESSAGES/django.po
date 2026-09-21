@@ -1,0 +1,186 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "Add new item"
+msgstr "Agregar nuevo"
+
+msgid "All applications"
+msgstr "Todas las secciones"
+
+msgid "Apply Filters"
+msgstr "Aplicar filtros"
+
+msgid "Available shortcuts"
+msgstr "Atajos disponibles"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Clear"
+msgstr "Borrar"
+
+msgid "Clear all filters"
+msgstr "Quitar todos los filtros"
+
+msgid "Clear selection"
+msgstr "Quitar la selección"
+
+msgid "Click here to select the objects across all pages"
+msgstr "Tocá acá para seleccionar todo, en todas las páginas"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Collapse"
+msgstr "Contraer"
+
+msgid "Create new record"
+msgstr "Crear registro nuevo"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Date/time"
+msgstr "Fecha y hora"
+
+msgid "Default"
+msgstr "Predeterminado"
+
+msgid "Filters"
+msgstr "Filtros"
+
+msgid "Forgotten your password or username?"
+msgstr "¿Olvidaste tu usuario o contraseña?"
+
+msgid "General"
+msgstr "General"
+
+msgid "Go back"
+msgstr "Volver"
+
+msgid "Hide counts"
+msgstr "Ocultar cantidades"
+
+msgid "Home"
+msgstr "Inicio"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Log in"
+msgstr "Ingresar"
+
+msgid "Log in again"
+msgstr "Ingresar de nuevo"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "No data"
+msgstr "Sin datos"
+
+msgid "No results found"
+msgstr "No se encontraron resultados"
+
+msgid "Nothing matched your search"
+msgstr "Nada coincide con tu búsqueda"
+
+msgid "Open command tool"
+msgstr "Abrir el buscador"
+
+msgid "Open selection"
+msgstr "Abrir la selección"
+
+msgid "Open selection in new tab"
+msgstr "Abrir la selección en otra pestaña"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Recent actions"
+msgstr "Acciones recientes"
+
+msgid "Recent searches"
+msgstr "Búsquedas recientes"
+
+msgid "Reset filters"
+msgstr "Borrar filtros"
+
+msgid "Return to site"
+msgstr "Volver a la web"
+
+msgid "Run"
+msgstr "Ejecutar"
+
+msgid "Run the selected action"
+msgstr "Ejecutar la acción elegida"
+
+msgid "Search apps and models..."
+msgstr "Buscar en el panel..."
+
+msgid "Select"
+msgstr "Elegir"
+
+msgid "Select action"
+msgstr "Elegir acción"
+
+msgid "Select action to run"
+msgstr "Elegir la acción a ejecutar"
+
+msgid "Select all objects on this page for an action"
+msgstr "Seleccionar todo lo de esta página"
+
+msgid "Show all"
+msgstr "Mostrar todo"
+
+msgid "Show counts"
+msgstr "Mostrar cantidades"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid ""
+"This page yielded into no results. Create a new item or reset your filters."
+msgstr "Esta página no tiene resultados. Creá uno nuevo o borrá los filtros."
+
+msgid "Toggle dark/light mode"
+msgstr "Cambiar entre modo oscuro y claro"
+
+msgid "Toggle filter"
+msgstr "Mostrar u ocultar filtros"
+
+msgid "Toggle password visibility"
+msgstr "Mostrar u ocultar la contraseña"
+
+msgid "Toggle sidebar"
+msgstr "Mostrar u ocultar el menú"
+
+msgid "Type to search"
+msgstr "Escribí para buscar"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "View on site"
+msgstr "Ver en la web"
+
+msgid "View site"
+msgstr "Ver la web"
+
+msgid "Welcome back to"
+msgstr "Te damos la bienvenida a"
+
+msgid "You have been successfully logged out from the administration"
+msgstr "Cerraste sesión correctamente"
+
+msgid "{{ full_result_count }} total"
+msgstr "{{ full_result_count }} en total"

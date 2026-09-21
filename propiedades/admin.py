@@ -2,13 +2,19 @@ import csv
 from urllib.parse import quote
 
 from django.contrib import admin, messages
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin, UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group, User
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import path, reverse
 from django.utils import timezone
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import display
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .ai import generar_descripcion, GeneracionDescripcionError
+from .utils import static_versionado
 from .importador import ImportacionError, importar_propiedad
 from .models import (
     Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio,
@@ -31,8 +37,9 @@ class ModeloSingletonAdminMixin:
         return redirect(reverse(f'admin:{opts.app_label}_{opts.model_name}_change', args=[1]))
 
 
-class FotoPropiedadInline(admin.TabularInline):
+class FotoPropiedadInline(TabularInline):
     model = FotoPropiedad
+    tab = True
     extra = 3
     fields = ('imagen', 'orden', 'vista_previa')
     readonly_fields = ('vista_previa',)
@@ -45,9 +52,24 @@ class FotoPropiedadInline(admin.TabularInline):
 
 
 @admin.register(Propiedad)
-class PropiedadAdmin(admin.ModelAdmin):
-    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio_formateado', 'esta_disponible', 'reservado', 'vendido', 'destacado', 'fecha_publicacion')
+class PropiedadAdmin(ModelAdmin):
+    list_display = ('vista_previa', 'direccion', 'tipo_propiedad', 'estado', 'precio_lista', 'en_la_web', 'esta_disponible', 'reservado', 'vendido', 'destacado')
     list_display_links = ('vista_previa', 'direccion')
+    list_per_page = 25
+    compressed_fields = True
+    warn_unsaved_form = True
+    fieldsets = (
+        ("Datos principales", {"classes": ["tab"], "fields": (
+            "direccion", "slug", ("tipo_propiedad", "estado"), ("precio", "moneda"),
+            ("ambientes", "dormitorios", "banos", "metros_cuadrados"),
+        )}),
+        ("Descripción", {"classes": ["tab"], "fields": ("descripcion", "amenidades", "video_url")}),
+        ("Foto principal", {"classes": ["tab"], "fields": ("imagen",)}),
+        ("Estado en la web", {"classes": ["tab"], "fields": (
+            "esta_disponible", "destacado", ("acepta_permuta", "apto_credito"), ("reservado", "vendido"),
+            "fecha_publicacion", "link_origen",
+        )}),
+    )
     list_filter = ('tipo_propiedad', 'estado', 'esta_disponible', 'reservado', 'vendido', 'acepta_permuta', 'apto_credito', 'destacado')
     search_fields = ('direccion', 'descripcion')
     list_editable = ('esta_disponible', 'reservado', 'vendido', 'destacado')
@@ -56,14 +78,37 @@ class PropiedadAdmin(admin.ModelAdmin):
     inlines = [FotoPropiedadInline]
 
     class Media:
-        css = {'all': ('css/admin_generar_descripcion.css', 'css/admin_importar_link.css')}
-        js = ('js/admin_generar_descripcion.js', 'js/admin_importar_link.js')
+        css = {'all': (
+            static_versionado('css/admin_generar_descripcion.css'),
+            static_versionado('css/admin_importar_link.css'),
+        )}
+        js = (
+            static_versionado('js/admin_generar_descripcion.js'),
+            static_versionado('js/admin_importar_link.js'),
+        )
 
     def vista_previa(self, obj):
         if obj.imagen:
-            return format_html('<img src="{}" style="height:45px; border-radius:4px;">', obj.imagen.url)
+            return format_html('<img src="{}" style="height:45px; border-radius:6px;">', obj.imagen.url)
         return "—"
     vista_previa.short_description = "Foto"
+
+    @display(description="Precio", ordering="precio")
+    def precio_lista(self, obj):
+        return obj.precio_formateado
+
+    @display(
+        description="En la web",
+        label={"Publicada": "success", "Reservada": "warning", "Vendida": "danger", "Borrador": "info"},
+    )
+    def en_la_web(self, obj):
+        if not obj.esta_disponible:
+            return "Borrador"
+        if obj.vendido:
+            return "Vendida"
+        if obj.reservado:
+            return "Reservada"
+        return "Publicada"
 
     def get_urls(self):
         urls = [
@@ -123,7 +168,7 @@ class PropiedadAdmin(admin.ModelAdmin):
 
 
 @admin.register(ConsultaPropiedad)
-class ConsultaPropiedadAdmin(admin.ModelAdmin):
+class ConsultaPropiedadAdmin(ModelAdmin):
     list_display = ('nombre', 'email', 'propiedad', 'fecha', 'atendida')
     list_filter = ('atendida', 'fecha')
     list_editable = ('atendida',)
@@ -133,13 +178,13 @@ class ConsultaPropiedadAdmin(admin.ModelAdmin):
 
 
 @admin.register(ConfiguracionIA)
-class ConfiguracionIAAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
+class ConfiguracionIAAdmin(ModeloSingletonAdminMixin, ModelAdmin):
     fields = ('instrucciones_estilo', 'actualizado')
     readonly_fields = ('actualizado',)
 
 
 @admin.register(ConfiguracionSitio)
-class ConfiguracionSitioAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
+class ConfiguracionSitioAdmin(ModeloSingletonAdminMixin, ModelAdmin):
     fieldsets = (
         ('Estadística 1', {'fields': ('estadistica_1_numero', 'estadistica_1_etiqueta')}),
         ('Estadística 2', {'fields': ('estadistica_2_numero', 'estadistica_2_etiqueta')}),
@@ -153,8 +198,9 @@ class ConfiguracionSitioAdmin(ModeloSingletonAdminMixin, admin.ModelAdmin):
 
 # ---------------------------------------------------------------- Interesados
 
-class FavoritoInline(admin.TabularInline):
+class FavoritoInline(TabularInline):
     model = Favorito
+    tab = True
     extra = 0
     fields = ('propiedad', 'creado')
     readonly_fields = ('propiedad', 'creado')
@@ -164,8 +210,9 @@ class FavoritoInline(admin.TabularInline):
         return False
 
 
-class AlertaBusquedaInline(admin.TabularInline):
+class AlertaBusquedaInline(TabularInline):
     model = AlertaBusqueda
+    tab = True
     extra = 0
     fields = ('descripcion', 'activa', 'creado', 'ultimo_envio')
     readonly_fields = ('descripcion', 'creado', 'ultimo_envio')
@@ -203,7 +250,7 @@ class TemperaturaFilter(admin.SimpleListFilter):
 
 
 @admin.register(Interesado)
-class InteresadoAdmin(admin.ModelAdmin):
+class InteresadoAdmin(ModelAdmin):
     list_display = ('contacto', 'temperatura_visual', 'origen', 'vio', 'guardo', 'busquedas', 'permiso', 'estado', 'ultima_actividad', 'escribirle')
     list_editable = ('estado',)
     list_filter = (TemperaturaFilter, PropiedadVistaFilter, 'estado', 'origen', 'acepta_novedades', 'baja')
@@ -211,10 +258,12 @@ class InteresadoAdmin(admin.ModelAdmin):
     date_hierarchy = 'creado'
     inlines = [FavoritoInline, AlertaBusquedaInline]
     actions = ['exportar_csv', 'marcar_contactado']
+    compressed_fields = True
+    warn_unsaved_form = True
     fieldsets = (
-        ('Contacto', {'fields': ('nombre', 'email', 'telefono', 'estado', 'notas')}),
-        ('Qué miró', {'fields': ('historial',)}),
-        ('Permiso para escribirle', {'fields': (
+        ('Contacto', {'classes': ['tab'], 'fields': ('nombre', 'email', 'telefono', 'estado', 'notas')}),
+        ('Qué miró', {'classes': ['tab'], 'fields': ('historial',)}),
+        ('Permiso para escribirle', {'classes': ['tab'], 'fields': (
             'origen', 'acepta_novedades', 'fecha_consentimiento', 'consentimiento_texto', 'consentimiento_ip',
             'baja', 'fecha_baja', 'creado', 'ultima_actividad',
         )}),
@@ -234,17 +283,9 @@ class InteresadoAdmin(admin.ModelAdmin):
             '<strong>{}</strong><br><span style="color:#777">{}</span>', partes[0], ' · '.join(partes[1:]),
         )
 
-    @admin.display(description="Temperatura")
+    @display(description="Temperatura", label={"Caliente": "danger", "Tibio": "warning", "Frío": "info"})
     def temperatura_visual(self, obj):
-        etiqueta, color = {
-            'caliente': ('Caliente', '#d61f1f'),
-            'tibio': ('Tibio', '#e8a100'),
-            'frio': ('Frío', '#6b7a8c'),
-        }[obj.temperatura()]
-        return format_html(
-            '<span style="background:{};color:#fff;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600">{}</span>',
-            color, etiqueta,
-        )
+        return {'caliente': 'Caliente', 'tibio': 'Tibio', 'frio': 'Frío'}[obj.temperatura()]
 
     @admin.display(description="Vio")
     def vio(self, obj):
@@ -292,7 +333,7 @@ class InteresadoAdmin(admin.ModelAdmin):
         )
         from django.utils.safestring import mark_safe
         return mark_safe(
-            '<table><thead><tr><th>Propiedad</th><th>Veces</th><th>Última visita</th></tr></thead><tbody>' + filas + '</tbody></table>'
+            '<table class="dr-tabla"><thead><tr><th>Propiedad</th><th>Veces</th><th>Última visita</th></tr></thead><tbody>' + filas + '</tbody></table>'
         )
 
     @admin.action(description="Exportar los seleccionados a Excel (CSV)")
@@ -314,3 +355,21 @@ class InteresadoAdmin(admin.ModelAdmin):
     def marcar_contactado(self, request, queryset):
         cantidad = queryset.update(estado='contactado')
         self.message_user(request, f"{cantidad} interesado(s) marcados como contactados.")
+
+
+# ---------------------------------------------------------------- Usuarios y grupos (mismo aspecto del panel)
+
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin, ModelAdmin):
+    pass

@@ -1,0 +1,74 @@
+{% extends 'admin/base.html' %}
+
+{% load i18n unfold %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="dr-panel">
+
+    <p class="dr-panel-saludo">Hola{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}. Esto es lo que pasa hoy en la inmobiliaria.</p>
+
+    <div class="dr-kpis">
+        {% for kpi in kpis %}
+        <a class="dr-kpi" href="{{ kpi.url }}">
+            <span class="dr-kpi-icono material-symbols-outlined">{{ kpi.icono }}</span>
+            <span class="dr-kpi-valor">{{ kpi.valor }}</span>
+            <span class="dr-kpi-titulo">{{ kpi.titulo }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="dr-acciones">
+        {% for accion in acciones %}
+        <a class="dr-accion" href="{{ accion.url }}"{% if accion.nueva_pestana %} target="_blank" rel="noopener"{% endif %}>
+            <span class="material-symbols-outlined">{{ accion.icono }}</span>{{ accion.titulo }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="dr-columnas">
+        {% component "unfold/components/card.html" with title="Últimas consultas" title_icon="mail" %}
+            {% if ultimas_consultas %}
+            <ul class="dr-lista">
+                {% for c in ultimas_consultas %}
+                <li>
+                    <div>
+                        <strong>{{ c.nombre }}</strong>
+                        <span>{{ c.propiedad.direccion }}</span>
+                    </div>
+                    <small>{{ c.fecha|date:"d/m H:i" }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+            <a class="dr-ver-todo" href="{{ url_consultas }}">Ver todas las consultas</a>
+            {% else %}
+            <p class="dr-vacio">Todavía no llegaron consultas.</p>
+            {% endif %}
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title="Interesados calientes" title_icon="local_fire_department" %}
+            {% if interesados_calientes %}
+            <ul class="dr-lista">
+                {% for i in interesados_calientes %}
+                <li>
+                    <div>
+                        <strong>{{ i }}</strong>
+                        <span>{{ i.resumen_vistas|default:"Consultó por una propiedad" }}</span>
+                    </div>
+                    {% if i.enlace_whatsapp %}<a class="dr-wa" href="{{ i.enlace_whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <a class="dr-ver-todo" href="{{ url_interesados }}">Ver todos los interesados</a>
+            {% else %}
+            <p class="dr-vacio">Todavía no hay interesados calientes: son quienes miran varias veces una propiedad o consultan.</p>
+            {% endif %}
+        {% endcomponent %}
+    </div>
+</div>
+{% endblock %}

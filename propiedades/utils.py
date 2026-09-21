@@ -34,3 +34,18 @@ def optimizar_imagen(imagefield, max_width=ANCHO_MAXIMO, quality=CALIDAD_JPEG):
     # así que hay que pasar solo el nombre de archivo (sin la carpeta) para no duplicarla.
     nombre_archivo = os.path.basename(imagefield.name)
     imagefield.save(nombre_archivo, ContentFile(buffer.getvalue()), save=False)
+
+
+def static_versionado(ruta):
+    """Como static(), pero con ?v=<fecha de modificación>: se vuelve a bajar cada vez que el archivo cambia."""
+    from django.contrib.staticfiles import finders
+    from django.templatetags.static import static
+
+    url = static(ruta)
+    archivo = finders.find(ruta)
+    if archivo:
+        try:
+            url += f"?v={int(os.path.getmtime(archivo))}"
+        except OSError:
+            pass
+    return url

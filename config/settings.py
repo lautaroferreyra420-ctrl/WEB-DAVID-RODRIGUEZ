@@ -41,6 +41,8 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',                 # tema moderno del panel de administración (debe ir antes que admin)
+    'unfold.contrib.filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -116,6 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+LOCALE_PATHS = [BASE_DIR / 'locale']
 LANGUAGE_CODE = 'es-ar' # Cambiado a español de Argentina
 TIME_ZONE = 'America/Argentina/Buenos_Aires' # Cambiado a tu zona horaria
 USE_I18N = True
@@ -162,3 +165,86 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL') or (
 
 # A dónde llegan las consultas de los formularios (puede ser distinta de la casilla que envía)
 EMAIL_DESTINO_CONSULTAS = os.getenv('EMAIL_DESTINO_CONSULTAS', 'info@davidrodriguezprop.com')
+
+
+# --- PANEL DE ADMINISTRACIÓN (tema django-unfold) ---
+from django.templatetags.static import static  # noqa: E402
+from django.urls import reverse_lazy  # noqa: E402
+
+from propiedades.utils import static_versionado  # noqa: E402
+
+UNFOLD = {
+    "SITE_TITLE": "David Rodríguez Propiedades",
+    "SITE_HEADER": "David Rodríguez Propiedades",
+    "SITE_SUBHEADER": "Panel de administración",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "apartment",
+    "SITE_LOGO": lambda request: static("img/logo.png"),
+    "SITE_FAVICONS": [
+        {"rel": "icon", "sizes": "32x32", "type": "image/png", "href": lambda request: static("img/logo.png")},
+    ],
+    "THEME": "dark",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "STYLES": [lambda request: static_versionado("css/admin_panel.css")],
+    "COLORS": {
+        # Grises neutros (sin tinte azul) para que combine con el negro de la marca
+        "base": {
+            "50": "oklch(98.5% 0 0)", "100": "oklch(97% 0 0)", "200": "oklch(92.2% 0 0)",
+            "300": "oklch(87% 0 0)", "400": "oklch(70.8% 0 0)", "500": "oklch(55.6% 0 0)",
+            "600": "oklch(43.9% 0 0)", "700": "oklch(37.1% 0 0)", "800": "oklch(26.9% 0 0)",
+            "900": "oklch(20.5% 0 0)", "950": "oklch(14.5% 0 0)",
+        },
+        # Rojo de la marca como color principal
+        "primary": {
+            "50": "oklch(97.1% .013 17.38)", "100": "oklch(93.6% .032 17.717)", "200": "oklch(88.5% .062 18.334)",
+            "300": "oklch(80.8% .114 19.571)", "400": "oklch(70.4% .191 22.216)", "500": "oklch(63.7% .237 25.331)",
+            "600": "oklch(57.7% .245 27.325)", "700": "oklch(50.5% .213 27.518)", "800": "oklch(44.4% .177 26.899)",
+            "900": "oklch(39.6% .141 25.723)", "950": "oklch(25.8% .092 26.042)",
+        },
+    },
+    "DASHBOARD_CALLBACK": "propiedades.panel_admin.dashboard_callback",
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Panel",
+                "separator": False,
+                "items": [
+                    {"title": "Inicio", "icon": "dashboard", "link": reverse_lazy("admin:index")},
+                ],
+            },
+            {
+                "title": "Propiedades",
+                "separator": True,
+                "items": [
+                    {"title": "Todas las propiedades", "icon": "home_work", "link": reverse_lazy("admin:propiedades_propiedad_changelist")},
+                    {"title": "Agregar / importar desde link", "icon": "add_link", "link": reverse_lazy("admin:propiedades_propiedad_add")},
+                ],
+            },
+            {
+                "title": "Contactos",
+                "separator": True,
+                "items": [
+                    {"title": "Interesados", "icon": "groups", "link": reverse_lazy("admin:propiedades_interesado_changelist")},
+                    {
+                        "title": "Consultas por propiedad", "icon": "mail",
+                        "link": reverse_lazy("admin:propiedades_consultapropiedad_changelist"),
+                        "badge": "propiedades.panel_admin.consultas_pendientes",
+                        "badge_variant": "danger",
+                    },
+                ],
+            },
+            {
+                "title": "Configuración",
+                "separator": True,
+                "items": [
+                    {"title": "Descripciones con IA", "icon": "auto_awesome", "link": reverse_lazy("admin:propiedades_configuracionia_changelist")},
+                    {"title": "Datos del sitio", "icon": "tune", "link": reverse_lazy("admin:propiedades_configuracionsitio_changelist")},
+                    {"title": "Usuarios", "icon": "person", "link": reverse_lazy("admin:auth_user_changelist")},
+                ],
+            },
+        ],
+    },
+}
