@@ -1548,38 +1548,41 @@ main {
 /* ---------------------------------------------------------------- */
 /* ETIQUETAS DE PROPIEDAD: VENDIDA / RESERVADA (cinta) + CHIPS */
 /* ---------------------------------------------------------------- */
-/* Sello: un rótulo blanco con doble borde de color, ligeramente inclinado, que se "estampa"
-   sobre la foto. La foto se oscurece un poco para que el sello resalte. */
+/* Etiqueta VENDIDA / RESERVADA: texto blanco fino, centrado sobre la foto, entre dos líneas de color
+   (roja en vendidas, dorada en reservadas). Sin caja: la foto se oscurece para que se lea. */
 .cinta-estado {
     position: absolute;
     top: 50%;
     left: 50%;
     z-index: 3;
-    transform: translate(-50%, -50%) rotate(-10deg);
-    padding: 8px 22px;
-    background: rgba(255, 255, 255, 0.94);
-    border: 3px solid currentColor;
-    border-radius: 12px;
-    outline: 2px solid currentColor;
-    outline-offset: 3px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: 4px;
+    transform: translate(-50%, -50%);
+    padding: 7px 4px 7px 9px; /* el padding izquierdo compensa el espaciado de letras */
+    color: var(--color-blanco);
+    border-top: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 6px;
     text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 2px 14px rgba(0, 0, 0, 0.6);
     white-space: nowrap;
     pointer-events: none;
 }
 
+/* Las líneas llevan el color; el texto siempre queda blanco */
+.cinta-estado {
+    border-color: var(--linea-estado, #ff4d4d);
+}
+
 .cinta-vendida {
-    color: #c40000;
+    --linea-estado: #ff4d4d;
 }
 
 .cinta-reservada {
-    color: #b87200;
+    --linea-estado: #f5b400;
 }
 
-/* Foto oscurecida detrás del sello (más en vendidas, apenas en reservadas) */
+/* Foto oscurecida detrás de la etiqueta */
 .card-vendida .card-imagen::before,
 .card-reservada .card-imagen::before,
 .galeria-vendida::after,
@@ -1587,17 +1590,16 @@ main {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1; /* por encima del preview de video, para que siga oscura al pasar el mouse */
+    /* Más oscuro en el centro (donde va el texto) y más suave en los bordes, así la foto se sigue viendo */
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0.48) 100%);
     pointer-events: none;
 }
 
-.card-vendida .card-imagen::before,
-.galeria-vendida::after {
-    background: rgba(0, 0, 0, 0.42);
-}
-
-.card-reservada .card-imagen::before,
-.galeria-reservada::after {
-    background: rgba(0, 0, 0, 0.22);
+/* Etiquetas de la card por encima del oscurecido, para que no se apaguen */
+.card-imagen .etiqueta-destacada,
+.card-imagen .card-precio-tag {
+    z-index: 2;
 }
 
 .card-vendida .card-imagen img,
@@ -1615,27 +1617,25 @@ main {
 }
 
 .detalle-galeria .cinta-estado {
-    font-size: 2.3rem;
-    padding: 12px 34px;
-    letter-spacing: 7px;
-    border-width: 4px;
-    outline-width: 3px;
-    outline-offset: 4px;
+    font-size: 2rem;
+    padding: 10px 6px 10px 14px;
+    letter-spacing: 11px;
+    border-width: 2px;
 }
 
-/* Entrada: el sello "cae" sobre la foto una sola vez, cuando la card aparece en pantalla */
+/* Entrada: aparece con un leve zoom hacia atrás, una sola vez, cuando la card entra en pantalla */
 .aos-animate .cinta-estado {
-    animation: sello-entrada 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) 0.35s both;
+    animation: etiqueta-entrada 0.8s ease-out 0.35s both;
 }
 
-@keyframes sello-entrada {
+@keyframes etiqueta-entrada {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) rotate(-22deg) scale(1.9);
+        transform: translate(-50%, -50%) scale(1.25);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, -50%) rotate(-10deg) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
 
@@ -1647,9 +1647,9 @@ main {
 
 @media (max-width: 480px) {
     .detalle-galeria .cinta-estado {
-        font-size: 1.4rem;
-        padding: 8px 20px;
-        letter-spacing: 4px;
+        font-size: 1.2rem;
+        letter-spacing: 6px;
+        padding: 7px 4px 7px 9px;
     }
 }
 
