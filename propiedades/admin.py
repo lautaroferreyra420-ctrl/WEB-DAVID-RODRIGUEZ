@@ -15,7 +15,7 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 
 from .ai import generar_descripcion, GeneracionDescripcionError
 from .utils import static_versionado
-from .importador import ImportacionError, importar_propiedad
+from .importador import EsListadoError, ImportacionError, importar_propiedad
 from .models import (
     Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio,
     Interesado, Favorito, AlertaBusqueda,
@@ -131,14 +131,28 @@ class PropiedadAdmin(ModelAdmin):
         if not self.has_add_permission(request):
             return JsonResponse({'error': 'No tenés permiso para agregar propiedades.'}, status=403)
 
+        # ficha=1: ya se sabe que es la ficha de una propiedad (se está importando un listado de a una).
+        # sin_mensajes=1: el resumen lo arma la pantalla, no hace falta un aviso por cada propiedad.
+        es_ficha = request.POST.get('ficha') == '1'
+        sin_mensajes = request.POST.get('sin_mensajes') == '1'
         try:
             propiedad, avisos = importar_propiedad(
                 request.POST.get('link', ''),
                 publicar=request.POST.get('publicar') == 'on',
                 max_fotos=request.POST.get('max_fotos') or 8,
+                detectar_listado=not es_ficha,
             )
+        except EsListadoError as listado:
+            return JsonResponse({'listado': True, 'fichas': listado.fichas, 'aviso': listado.aviso})
         except ImportacionError as exc:
             return JsonResponse({'error': str(exc)}, status=400)
+
+        if sin_mensajes:
+            return JsonResponse({
+                'ok': True, 'pk': propiedad.pk, 'direccion': propiedad.direccion, 'avisos': avisos,
+                'fotos': propiedad.fotos.count() + (1 if propiedad.imagen else 0),
+                'publicada': propiedad.esta_disponible,
+            })
 
         estado = "publicada" if propiedad.esta_disponible else "guardada como borrador (no se ve en la web hasta que la marques como Disponible)"
         messages.success(

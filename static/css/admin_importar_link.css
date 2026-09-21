@@ -75,3 +75,17 @@
 
 .importar-link-estado.es-error { color: #fca5a5; border-color: #b91c1c; }
 .importar-link-estado[hidden] { display: none; }
+
+/* Progreso cuando el link trae varias propiedades */
+.importar-lista-titulo { margin: 0 0 10px; font-weight: 600; color: var(--color-base-100, #eee); }
+.importar-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.importar-lista li { padding: 7px 12px 7px 34px; border-radius: 8px; background: var(--color-base-900, #1a1a1a); position: relative; font-size: 13px; }
+/* Un punto de color indica el estado de cada propiedad (evita depender de símbolos del sistema) */
+.importar-lista li::before { position: absolute; left: 13px; top: 13px; content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--color-base-600, #555); }
+.importar-lista li.en-curso::before { background: var(--color-primary-500, #ef4444); animation: importar-latido 1s ease-in-out infinite; }
+.importar-lista li.hecha::before { background: #4ade80; }
+.importar-lista li.omitida::before { background: #fbbf24; }
+@keyframes importar-latido { 50% { opacity: 0.25; } }
+.importar-lista li small { color: var(--color-base-400, #999); }
+.importar-lista-ver { display: inline-block; margin-top: 12px; text-decoration: none; }
+

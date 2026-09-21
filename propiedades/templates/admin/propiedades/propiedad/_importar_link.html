@@ -1,7 +1,8 @@
-<div class="importar-link" id="importar-link" data-url="{% url 'admin:propiedades_propiedad_importar_desde_link' %}">
+<div class="importar-link" id="importar-link" data-url="{% url 'admin:propiedades_propiedad_importar_desde_link' %}"
+     data-url-listado="{% url 'admin:propiedades_propiedad_changelist' %}">
     <div class="importar-link-encabezado">
         <strong>Importar desde un link</strong>
-        <span>Pegá el link de la publicación (Argencasas, Zonaprop, tu web vieja...) y se completan solos los datos, las fotos y la descripción con IA.</span>
+        <span>Pegá el link de una propiedad, o de un listado con varias, y se completan solos los datos, las fotos y la descripción con IA.</span>
     </div>
     <form class="importar-link-form" autocomplete="off">
         {% csrf_token %}
