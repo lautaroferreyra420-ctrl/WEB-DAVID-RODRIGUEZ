@@ -229,11 +229,25 @@ UNFOLD = {
                 "items": [
                     {"title": "Interesados", "icon": "groups", "link": reverse_lazy("admin:propiedades_interesado_changelist")},
                     {
+                        "title": "Pedidos de tasación", "icon": "request_quote",
+                        "link": reverse_lazy("admin:propiedades_solicitudtasacion_changelist"),
+                        "badge": "propiedades.panel_admin.tasaciones_pendientes",
+                        "badge_variant": "danger",
+                    },
+                    {
                         "title": "Consultas por propiedad", "icon": "mail",
                         "link": reverse_lazy("admin:propiedades_consultapropiedad_changelist"),
                         "badge": "propiedades.panel_admin.consultas_pendientes",
                         "badge_variant": "danger",
                     },
+                ],
+            },
+            {
+                "title": "Contenido de la web",
+                "separator": True,
+                "items": [
+                    {"title": "Testimonios", "icon": "format_quote", "link": reverse_lazy("admin:propiedades_testimonio_changelist")},
+                    {"title": "Equipo", "icon": "badge", "link": reverse_lazy("admin:propiedades_miembroequipo_changelist")},
                 ],
             },
             {

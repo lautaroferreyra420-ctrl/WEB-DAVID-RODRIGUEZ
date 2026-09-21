@@ -26,12 +26,14 @@ class Interesado(models.Model):
     ORIGEN_POPUP = 'popup'
     ORIGEN_CONSULTA = 'consulta'
     ORIGEN_CONTACTO = 'contacto'
+    ORIGEN_TASACION = 'tasacion'
     OPCIONES_ORIGEN = [
         (ORIGEN_FAVORITO, 'Guardó una propiedad'),
         (ORIGEN_ALERTA, 'Pidió alertas de búsqueda'),
         (ORIGEN_POPUP, 'Ventana de novedades'),
         (ORIGEN_CONSULTA, 'Consulta por una propiedad'),
         (ORIGEN_CONTACTO, 'Formulario de contacto'),
+        (ORIGEN_TASACION, 'Pidió una tasación'),
     ]
     OPCIONES_ESTADO = [
         ('nuevo', 'Nuevo'),
@@ -101,7 +103,7 @@ class Interesado(models.Model):
         visitas = self.visitas()
         total = sum(v.veces for v in visitas)
         maximo = max((v.veces for v in visitas), default=0)
-        if maximo >= 3 or total >= 4 or self.origen in (self.ORIGEN_CONSULTA, self.ORIGEN_CONTACTO):
+        if maximo >= 3 or total >= 4 or self.origen in (self.ORIGEN_CONSULTA, self.ORIGEN_CONTACTO, self.ORIGEN_TASACION):
             return 'caliente'
         if total >= 2 or self.favoritos.all() or self.alertas.all():
             return 'tibio'

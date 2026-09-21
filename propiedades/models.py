@@ -1,5 +1,6 @@
 # propiedades/models.py
 
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -58,6 +59,9 @@ class Propiedad(models.Model):
     metros_cuadrados = models.IntegerField(default=0, verbose_name="M² Construidos")
     banos = models.IntegerField(default=1, verbose_name="Baños")
     
+    latitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, verbose_name="Latitud")
+    longitud = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, verbose_name="Longitud")
+
     link_origen = models.URLField(
         max_length=500, blank=True, verbose_name="Link de origen",
         help_text="Se completa solo cuando la propiedad se importa desde un link. Evita importarla dos veces.",
@@ -103,6 +107,15 @@ class Propiedad(models.Model):
         monto = f"{self.precio:,.0f}".replace(",", ".")
         return f"$ {monto}" if self.moneda == 'ARS' else f"USD {monto}"
 
+    @property
+    def zona(self):
+        """Barrio o localidad: lo que va después de la última coma de la dirección (ej: 'Castelar Norte')."""
+        return self.direccion.rsplit(',', 1)[1].strip() if ',' in self.direccion else ''
+
+    @property
+    def zona_slug(self):
+        return slugify(self.zona)
+
     def clean(self):
         if self.reservado and self.vendido:
             raise ValidationError("Una propiedad no puede estar a la vez reservada y vendida. Marcá solo una.")
@@ -119,6 +132,12 @@ class Propiedad(models.Model):
                 optimizar_imagen(self.imagen)
 
         super().save(*args, **kwargs)
+        cache.delete('zonas_disponibles')
+
+    def delete(self, *args, **kwargs):
+        resultado = super().delete(*args, **kwargs)
+        cache.delete('zonas_disponibles')
+        return resultado
 
     def get_absolute_url(self):
         return reverse('detalle_propiedad', args=[self.pk, self.slug])
@@ -258,3 +277,4 @@ class ConfiguracionSitio(ModeloSingleton):
 
 
 from .models_interesados import *  # noqa: E402,F401,F403
+from .models_contenido import *  # noqa: E402,F401,F403

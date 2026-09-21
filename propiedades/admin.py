@@ -14,11 +14,12 @@ from unfold.decorators import display
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .ai import generar_descripcion, GeneracionDescripcionError
+from .geolocalizacion import ubicar_propiedades
 from .utils import static_versionado
 from .importador import EsListadoError, ImportacionError, importar_propiedad
 from .models import (
     Propiedad, FotoPropiedad, ConsultaPropiedad, ConfiguracionIA, ConfiguracionSitio,
-    Interesado, Favorito, AlertaBusqueda,
+    Interesado, Favorito, AlertaBusqueda, SolicitudTasacion, Testimonio, MiembroEquipo,
 )
 
 
@@ -65,6 +66,10 @@ class PropiedadAdmin(ModelAdmin):
         )}),
         ("Descripción", {"classes": ["tab"], "fields": ("descripcion", "amenidades", "video_url")}),
         ("Foto principal", {"classes": ["tab"], "fields": ("imagen",)}),
+        ("Ubicación en el mapa", {"classes": ["tab"], "description": (
+            "Se completan solas con la acción «Ubicar en el mapa» del listado. También podés cargarlas a mano "
+            "(botón derecho en Google Maps sobre la propiedad y copiar los dos números)."
+        ), "fields": (("latitud", "longitud"),)}),
         ("Estado en la web", {"classes": ["tab"], "fields": (
             "esta_disponible", "destacado", ("acepta_permuta", "apto_credito"), ("reservado", "vendido"),
             "fecha_publicacion", "link_origen",
@@ -86,6 +91,21 @@ class PropiedadAdmin(ModelAdmin):
             static_versionado('js/admin_generar_descripcion.js'),
             static_versionado('js/admin_importar_link.js'),
         )
+
+    actions = ['ubicar_en_el_mapa']
+
+    @admin.action(description="Ubicar en el mapa las seleccionadas")
+    def ubicar_en_el_mapa(self, request, queryset):
+        ubicadas, fallidas = ubicar_propiedades(queryset)
+        if ubicadas:
+            self.message_user(request, f"Ubicadas en el mapa: {len(ubicadas)}.", messages.SUCCESS)
+        if fallidas:
+            nombres = "; ".join(p.direccion for p in fallidas)
+            self.message_user(
+                request,
+                f"No pude ubicar {len(fallidas)} (abrí cada una y cargá latitud y longitud a mano): {nombres}",
+                messages.WARNING,
+            )
 
     def vista_previa(self, obj):
         if obj.imagen:
@@ -387,3 +407,44 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
 @admin.register(Group)
 class GroupAdmin(BaseGroupAdmin, ModelAdmin):
     pass
+
+
+# ---------------------------------------------------------------- Tasaciones, testimonios y equipo
+
+@admin.register(SolicitudTasacion)
+class SolicitudTasacionAdmin(ModelAdmin):
+    list_display = ('nombre', 'telefono', 'direccion', 'tipo_propiedad', 'objetivo', 'fecha', 'atendida', 'escribirle')
+    list_filter = ('atendida', 'objetivo', 'tipo_propiedad', 'fecha')
+    list_editable = ('atendida',)
+    search_fields = ('nombre', 'email', 'telefono', 'direccion')
+    date_hierarchy = 'fecha'
+    readonly_fields = ('nombre', 'email', 'telefono', 'direccion', 'tipo_propiedad', 'objetivo', 'metros_cubiertos', 'dormitorios', 'mensaje', 'fecha')
+
+    def has_add_permission(self, request):
+        return False
+
+    @admin.display(description="Escribirle")
+    def escribirle(self, obj):
+        numero = Interesado(telefono=obj.telefono).telefono_whatsapp()
+        texto = quote(f"Hola {obj.nombre}, te escribimos de David Rodríguez Propiedades por tu pedido de tasación de {obj.direccion}.")
+        enlaces = []
+        if numero:
+            enlaces.append(format_html('<a href="https://wa.me/{}?text={}" target="_blank" rel="noopener">WhatsApp</a>', numero, texto))
+        enlaces.append(format_html('<a href="mailto:{}">Mail</a>', obj.email))
+        return format_html(' · '.join(['{}'] * len(enlaces)), *enlaces)
+
+
+@admin.register(Testimonio)
+class TestimonioAdmin(ModelAdmin):
+    list_display = ('nombre', 'zona', 'estrellas', 'activo', 'orden')
+    list_editable = ('activo', 'orden')
+    search_fields = ('nombre', 'texto', 'zona')
+    compressed_fields = True
+
+
+@admin.register(MiembroEquipo)
+class MiembroEquipoAdmin(ModelAdmin):
+    list_display = ('nombre', 'cargo', 'activo', 'orden')
+    list_editable = ('activo', 'orden')
+    search_fields = ('nombre', 'cargo')
+    compressed_fields = True

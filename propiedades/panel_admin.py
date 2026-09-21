@@ -3,12 +3,17 @@ from urllib.parse import quote
 
 from django.urls import reverse
 
-from .models import ConsultaPropiedad, Interesado, Propiedad
+from .models import ConsultaPropiedad, Interesado, Propiedad, SolicitudTasacion
 
 
 def consultas_pendientes(request):
     """Número que aparece junto a «Consultas por propiedad» en el menú (vacío si no hay pendientes)."""
     cantidad = ConsultaPropiedad.objects.filter(atendida=False).count()
+    return str(cantidad) if cantidad else ""
+
+
+def tasaciones_pendientes(request):
+    cantidad = SolicitudTasacion.objects.filter(atendida=False).count()
     return str(cantidad) if cantidad else ""
 
 
@@ -50,6 +55,11 @@ def dashboard_callback(request, context):
                 'titulo': 'Consultas sin atender', 'icono': 'mark_email_unread',
                 'valor': ConsultaPropiedad.objects.filter(atendida=False).count(),
                 'url': _lista('consultapropiedad', 'atendida__exact=0'),
+            },
+            {
+                'titulo': 'Tasaciones pendientes', 'icono': 'request_quote',
+                'valor': SolicitudTasacion.objects.filter(atendida=False).count(),
+                'url': _lista('solicitudtasacion', 'atendida__exact=0'),
             },
             {
                 'titulo': 'Interesados nuevos', 'icono': 'person_add',

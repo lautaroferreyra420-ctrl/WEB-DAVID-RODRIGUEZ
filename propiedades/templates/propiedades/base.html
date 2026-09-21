@@ -14,6 +14,10 @@
     <link rel="icon" href="{% static 'img/Logo.png' %}">
     <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock %}</title>
 
+    <link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
+    <script type="application/ld+json">{{ ld_inmobiliaria }}</script>
+    {% block json_ld %}{% endblock %}
+
     {% block meta_description %}
     <meta name="description" content="David Rodriguez Propiedades: compra, venta y alquiler de casas, departamentos y locales.">
     {% endblock %}
@@ -53,7 +57,9 @@
             <nav>
                 <a href="{% url 'inicio' %}">Inicio</a>
                 <a href="{% url 'nosotros' %}">Nosotros</a>
+                <a href="{% url 'tasacion' %}">Tasación</a>
                 <a href="{% url 'contacto' %}">Contacto</a>
+                {% if dr_es_interesado %}<a href="{% url 'guardados' %}" class="nav-guardados">Guardados{% if dr_favoritos_ids %} ({{ dr_favoritos_ids|length }}){% endif %}</a>{% endif %}
                 {% if user.is_authenticated and user.is_superuser %}
                     <a href="{% url 'admin:index' %}">Administración</a>
                 {% endif %}
@@ -79,9 +85,22 @@
                     <a href="{% url 'inicio' %}">Home</a>
                     <a href="{% url 'nosotros' %}">Nosotros</a>
                     <a href="{% url 'inicio' %}#area-resultados">Propiedades</a>
+                    <a href="{% url 'mapa' %}">Mapa</a>
+                    <a href="{% url 'tasacion' %}">Tasación</a>
                     <a href="{% url 'contacto' %}">Contacto</a>
                 </nav>
             </div>
+
+            {% if zonas_pie %}
+            <div class="pie-zonas">
+                <h4 class="pie-titulo">Zonas</h4>
+                <ul>
+                    {% for slug, nombre, cantidad in zonas_pie %}
+                    <li><a href="{% url 'zona' slug %}">{{ nombre }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
 
             <div class="pie-contacto">
                 <h4 class="pie-titulo">Contacto</h4>

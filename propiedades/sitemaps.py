@@ -9,7 +9,7 @@ class PaginasEstaticasSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return ['inicio', 'nosotros', 'contacto']
+        return ['inicio', 'nosotros', 'tasacion', 'mapa', 'contacto']
 
     def location(self, item):
         return reverse(item)
@@ -24,3 +24,15 @@ class PropiedadSitemap(Sitemap):
 
     def location(self, obj):
         return obj.get_absolute_url()
+
+
+class ZonaSitemap(Sitemap):
+    changefreq = 'weekly'
+    priority = 0.7
+
+    def items(self):
+        from .views import zonas_disponibles
+        return [slug for slug, _nombre, _cantidad in zonas_disponibles()]
+
+    def location(self, slug):
+        return reverse('zona', args=[slug])

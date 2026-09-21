@@ -1,0 +1,89 @@
+{% extends 'propiedades/base.html' %}
+{% load static %}
+
+{% block title %}Tasá tu propiedad - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block meta_description %}
+<meta name="description" content="Pedí la tasación de tu casa, departamento, local o terreno en zona oeste. Un asesor de David Rodríguez Propiedades te contacta.">
+{% endblock %}
+
+{% block content %}
+
+<section class="pagina-hero" data-aos="fade-up">
+    <span class="hero-kicker">Tasación</span>
+    <h1>¿Cuánto vale tu propiedad?</h1>
+    <p>Contanos qué querés tasar y un asesor con más de 10 años de experiencia en zona oeste se comunica con vos.</p>
+</section>
+
+<div class="contacto-pagina tasacion-pagina">
+
+    <div class="contacto-columna">
+        <ol class="tasacion-pasos">
+            <li data-aos="fade-up">
+                <span class="tasacion-paso-numero">1</span>
+                <div>
+                    <strong>Completás el formulario</strong>
+                    <p>Con la dirección y los datos básicos de la propiedad. Lleva menos de un minuto.</p>
+                </div>
+            </li>
+            <li data-aos="fade-up" data-aos-delay="80">
+                <span class="tasacion-paso-numero">2</span>
+                <div>
+                    <strong>Un asesor te contacta</strong>
+                    <p>Por teléfono o WhatsApp, para coordinar y conocer mejor la propiedad.</p>
+                </div>
+            </li>
+            <li data-aos="fade-up" data-aos-delay="160">
+                <span class="tasacion-paso-numero">3</span>
+                <div>
+                    <strong>Recibís la tasación</strong>
+                    <p>Según el valor de mercado de tu zona, para que decidas cómo seguir.</p>
+                </div>
+            </li>
+        </ol>
+
+        <div class="canal-card canal-whatsapp" data-aos="fade-up">
+            <span class="canal-icono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+            </span>
+            <span class="canal-texto">
+                <small>¿Preferís hablar ya?</small>
+                <strong>Escribinos por WhatsApp</strong>
+            </span>
+            <a class="tasacion-wa" href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20tasar%20mi%20propiedad" target="_blank" rel="noopener">Abrir</a>
+        </div>
+    </div>
+
+    <div class="form-card" data-aos="fade-up" data-aos-delay="100">
+        <h2>Pedí tu tasación</h2>
+        <p class="form-card-sub">Los datos que nos dejes se usan solo para contactarte por esta consulta.</p>
+
+        {% if mensaje_enviado %}
+            <div class="success-message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m22 4-10 10-3-3"/></svg>
+                <p><strong>¡Recibimos tu pedido!</strong><br>Un asesor se va a comunicar con vos a la brevedad.</p>
+            </div>
+        {% else %}
+            <form method="post" class="contact-form">
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                {% for field in form.visible_fields %}
+                    <div class="form-field-wrapper">
+                        <label class="form-etiqueta" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="form-error">{{ field.errors.0 }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-submit-contact">
+                    Pedir tasación
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+                <p class="form-legal">Al enviar aceptás que te contactemos por esta consulta. <a href="{% url 'privacidad' %}">Política de privacidad</a></p>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,102 @@
+{% extends 'propiedades/base.html' %}
+{% load static %}
+
+{% block title %}Mapa de propiedades - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block meta_description %}
+<meta name="description" content="Mirá en el mapa todas las propiedades en venta y alquiler de David Rodríguez Propiedades en zona oeste.">
+{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+
+<section class="pagina-hero" data-aos="fade-up">
+    <span class="hero-kicker">Mapa</span>
+    <h1>Propiedades en el mapa</h1>
+    <p>Tocá un punto para ver la propiedad y entrar a su ficha.</p>
+</section>
+
+<div class="mapa-pagina">
+    <div class="mapa-filtros" role="group" aria-label="Filtrar por operación">
+        <button type="button" class="mapa-filtro activo" data-estado="">Todas</button>
+        <button type="button" class="mapa-filtro" data-estado="Venta">En venta</button>
+        <button type="button" class="mapa-filtro" data-estado="Alquiler">En alquiler</button>
+        <button type="button" class="mapa-filtro" data-estado="Permuta">Permuta</button>
+        <button type="button" class="mapa-filtro" data-estado="Emprendimiento">Emprendimientos</button>
+    </div>
+
+    <div id="mapa-propiedades" class="mapa-propiedades" role="application" aria-label="Mapa de propiedades"></div>
+
+    {% if not puntos %}
+        <p class="mapa-aviso">Todavía no hay propiedades ubicadas en el mapa. <a href="{% url 'inicio' %}">Ver la lista</a></p>
+    {% elif sin_ubicar %}
+        <p class="mapa-aviso">{{ sin_ubicar }} propiedad{{ sin_ubicar|pluralize:"es" }} más no aparece{{ sin_ubicar|pluralize:"n" }} en el mapa. <a href="{% url 'inicio' %}">Ver la lista completa</a></p>
+    {% endif %}
+</div>
+
+{{ puntos|json_script:"datos-mapa" }}
+{% endblock content %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function () {
+        const puntos = JSON.parse(document.getElementById('datos-mapa').textContent);
+        // Vista inicial: zona oeste del Gran Buenos Aires
+        const mapa = L.map('mapa-propiedades', { scrollWheelZoom: false }).setView([-34.65, -58.62], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(mapa);
+
+        function crearPopup(p) {
+            const caja = document.createElement('div');
+            caja.className = 'mapa-popup';
+            if (p.foto) {
+                const img = document.createElement('img');
+                img.src = p.foto; img.alt = ''; img.loading = 'lazy';
+                caja.appendChild(img);
+            }
+            const precio = document.createElement('strong');
+            precio.textContent = p.precio + (p.vendida ? ' (vendida)' : p.reservada ? ' (reservada)' : '');
+            const dir = document.createElement('span');
+            dir.textContent = p.direccion;
+            const enlace = document.createElement('a');
+            enlace.href = p.url; enlace.textContent = 'Ver propiedad';
+            caja.append(precio, dir, enlace);
+            return caja;
+        }
+
+        const marcadores = puntos.map(function (p) {
+            const marcador = L.marker([p.lat, p.lng]).bindPopup(crearPopup(p));
+            marcador.datosEstado = p.estado;
+            return marcador;
+        });
+
+        const grupo = L.layerGroup().addTo(mapa);
+        function mostrar(estado) {
+            grupo.clearLayers();
+            const visibles = marcadores.filter(function (m) { return !estado || m.datosEstado === estado; });
+            visibles.forEach(function (m) { m.addTo(grupo); });
+            if (visibles.length) {
+                mapa.fitBounds(L.featureGroup(visibles).getBounds().pad(0.25), { maxZoom: 15 });
+            }
+        }
+        mostrar('');
+
+        document.querySelectorAll('.mapa-filtro').forEach(function (boton) {
+            boton.addEventListener('click', function () {
+                document.querySelectorAll('.mapa-filtro').forEach(function (b) { b.classList.remove('activo'); });
+                boton.classList.add('activo');
+                mostrar(boton.dataset.estado);
+            });
+        });
+        // El zoom con la rueda se activa al tocar el mapa, para no trabar el scroll de la página
+        mapa.on('focus', function () { mapa.scrollWheelZoom.enable(); });
+        mapa.on('blur', function () { mapa.scrollWheelZoom.disable(); });
+    })();
+</script>
+{% endblock %}

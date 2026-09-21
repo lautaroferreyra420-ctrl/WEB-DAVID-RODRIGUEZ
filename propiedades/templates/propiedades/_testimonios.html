@@ -1,0 +1,18 @@
+{% load propiedades_extras %}
+{% if testimonios %}
+<section class="testimonios" data-aos="fade-up">
+    <h2 class="nosotros-titulo-seccion">Lo que dicen nuestros clientes</h2>
+    <div class="testimonios-grid">
+        {% for t in testimonios %}
+        <figure class="testimonio-card">
+            <div class="testimonio-estrellas" role="img" aria-label="{{ t.estrellas }} de 5 estrellas">{% estrellas t.estrellas %}</div>
+            <blockquote>{{ t.texto }}</blockquote>
+            <figcaption>
+                {% if t.foto %}<img src="{{ t.foto.url }}" alt="" class="testimonio-foto" loading="lazy">{% endif %}
+                <span><strong>{{ t.nombre }}</strong>{% if t.zona %} &middot; {{ t.zona }}{% endif %}</span>
+            </figcaption>
+        </figure>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

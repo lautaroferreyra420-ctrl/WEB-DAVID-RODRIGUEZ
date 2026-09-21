@@ -1,0 +1,39 @@
+{% extends 'propiedades/base.html' %}
+{% load static propiedades_extras %}
+
+{% block title %}Mis propiedades guardadas - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block content %}
+
+<section class="pagina-hero" data-aos="fade-up">
+    <span class="hero-kicker">Mis guardados</span>
+    <h1>Las propiedades que guardaste</h1>
+    <p>Volvé cuando quieras a mirarlas. Te avisamos si baja el precio, se reserva o se vende.</p>
+</section>
+
+<div class="main-container zona-contenedor">
+    <main id="area-resultados">
+        {% if propiedades %}
+            <div class="propiedades-grid">
+                {% for propiedad in propiedades %}
+                    {% include 'propiedades/_tarjeta_propiedad.html' %}
+                {% endfor %}
+            </div>
+            <p class="guardados-compartir">
+                <a class="btn-cta btn-cta-wa" href="https://wa.me/?text={{ texto_whatsapp }}" target="_blank" rel="noopener">
+                    <img src="{% static 'img/whatsapp.svg' %}" alt="">
+                    Compartir mi lista por WhatsApp
+                </a>
+            </p>
+        {% else %}
+            <div class="guardados-vacio">
+                {% icono "corazon" %}
+                <h2>{% if es_interesado %}Todavía no guardaste ninguna propiedad{% else %}Acá van a aparecer tus propiedades guardadas{% endif %}</h2>
+                <p>Tocá el corazón de cualquier propiedad para guardarla y tenerla siempre a mano.</p>
+                <a class="btn-cta btn-cta-claro" href="{% url 'inicio' %}">Ver propiedades</a>
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+{% endblock content %}

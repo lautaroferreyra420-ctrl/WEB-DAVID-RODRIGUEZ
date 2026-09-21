@@ -79,6 +79,7 @@
                     <li>De departamentos</li>
                     <li>Y más</li>
                 </ul>
+                <a class="nosotros-card-link" href="{% url 'tasacion' %}">Pedir una tasación &rarr;</a>
             </article>
 
             <article class="nosotros-card" data-aos="fade-up" data-aos-delay="160">
@@ -94,6 +95,10 @@
             </article>
         </div>
     </section>
+
+    {% include 'propiedades/_equipo.html' %}
+
+    {% include 'propiedades/_testimonios.html' %}
 
     <section class="nosotros-cta" data-aos="fade-up">
         <h2>Puede ponerse en contacto con nosotros en cualquier momento</h2>

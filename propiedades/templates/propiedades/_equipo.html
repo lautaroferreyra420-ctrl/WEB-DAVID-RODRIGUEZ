@@ -1,0 +1,21 @@
+{% if equipo %}
+<section class="equipo" data-aos="fade-up">
+    <h2 class="nosotros-titulo-seccion">Nuestro equipo</h2>
+    <div class="equipo-grid">
+        {% for m in equipo %}
+        <article class="equipo-card">
+            {% if m.foto %}
+                <img src="{{ m.foto.url }}" alt="{{ m.nombre }}" class="equipo-foto" loading="lazy">
+            {% else %}
+                <span class="equipo-foto equipo-iniciales" aria-hidden="true">{{ m.nombre|slice:":1" }}</span>
+            {% endif %}
+            <h3>{{ m.nombre }}</h3>
+            <p>{{ m.cargo }}</p>
+            {% if m.whatsapp %}
+                <a class="equipo-wa" href="https://wa.me/{{ m.whatsapp }}" target="_blank" rel="noopener">Escribirle por WhatsApp</a>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

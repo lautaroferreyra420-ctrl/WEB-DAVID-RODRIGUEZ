@@ -1,0 +1,41 @@
+{% extends 'propiedades/base.html' %}
+{% load static propiedades_extras %}
+
+{% block title %}Propiedades en {{ zona }} - David Rodriguez Inmobiliaria{% endblock title %}
+
+{% block meta_description %}
+<meta name="description" content="Casas, departamentos y locales en {{ zona }}: {{ propiedades|length }} propiedad{{ propiedades|length|pluralize:"es" }} disponible{{ propiedades|length|pluralize }} ({{ resumen }}). David Rodríguez Propiedades, especialistas en zona oeste.">
+{% endblock %}
+
+{% block content %}
+
+<section class="pagina-hero" data-aos="fade-up">
+    <span class="hero-kicker">Zona</span>
+    <h1>Propiedades en {{ zona }}</h1>
+    <p>Hay {{ propiedades|length }} propiedad{{ propiedades|length|pluralize:"es" }} disponible{{ propiedades|length|pluralize }} en {{ zona }} ({{ resumen }}). Somos especialistas en zona oeste con más de 10 años de experiencia.</p>
+</section>
+
+<div class="main-container zona-contenedor">
+    <main id="area-resultados">
+        <div class="propiedades-grid">
+            {% for propiedad in propiedades %}
+                {% include 'propiedades/_tarjeta_propiedad.html' %}
+            {% endfor %}
+        </div>
+
+        {% if otras_zonas %}
+        <section class="zonas-otras" data-aos="fade-up">
+            <h2>Otras zonas</h2>
+            <div class="zonas-chips">
+                {% for slug, nombre, cantidad in otras_zonas %}
+                    <a class="zona-chip" href="{% url 'zona' slug %}">{{ nombre }} <span>{{ cantidad }}</span></a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <p class="zona-volver"><a href="{% url 'inicio' %}">&larr; Ver todas las propiedades</a></p>
+    </main>
+</div>
+
+{% endblock content %}

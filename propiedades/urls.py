@@ -13,6 +13,10 @@ urlpatterns = [
 
     # 3. PÁGINAS INSTITUCIONALES: NOSOTROS Y CONTACTO
     path('nosotros/', views.pagina_nosotros, name='nosotros'),
+    path('tasacion/', views.pagina_tasacion, name='tasacion'),
+    path('mapa/', views.mapa_propiedades, name='mapa'),
+    path('guardados/', views.mis_guardados, name='guardados'),
+    path('zona/<slug:slug>/', views.propiedades_por_zona, name='zona'),
     path('contacto/', views.pagina_contacto, name='contacto'),
 
     # 4. INTERESADOS: alta con consentimiento, guardados, baja y política de privacidad

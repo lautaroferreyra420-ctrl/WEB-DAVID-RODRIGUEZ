@@ -24,6 +24,7 @@ from google.genai import errors as genai_errors
 from google.genai import types
 
 from .ai import MODEL, GeneracionDescripcionError, generar_descripcion
+from .geolocalizacion import geolocalizar
 from .models import FotoPropiedad, Propiedad
 
 logger = logging.getLogger(__name__)
@@ -526,6 +527,13 @@ def importar_propiedad(url, publicar=False, max_fotos=FOTOS_POR_DEFECTO, detecta
         propiedad.imagen = archivos[0]
 
     propiedad.save()
+    # Ubicación en el mapa (si no se encuentra la calle, queda sin pin y se puede cargar a mano en el admin)
+    coordenadas = geolocalizar(propiedad.direccion)
+    if coordenadas:
+        propiedad.latitud, propiedad.longitud = coordenadas
+        propiedad.save(update_fields=['latitud', 'longitud'])
+    else:
+        avisos.append("No pude ubicarla en el mapa: cargá latitud y longitud a mano si querés que aparezca.")
     for orden, archivo in enumerate(archivos[1:], start=1):
         FotoPropiedad.objects.create(propiedad=propiedad, imagen=archivo, orden=orden)
 

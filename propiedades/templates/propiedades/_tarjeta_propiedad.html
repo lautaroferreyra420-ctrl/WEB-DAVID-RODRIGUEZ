@@ -1,0 +1,50 @@
+{% load static propiedades_extras %}
+<article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}{% if propiedad.vendido %} card-vendida{% elif propiedad.reservado %} card-reservada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
+         {% if propiedad.video_url %}data-video-preview="{{ propiedad.video_url|preview_embed_url }}"{% endif %}>
+
+    <div class="card-imagen">
+        <img src="{% if propiedad.imagen %}{{ propiedad.imagen.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}"
+             alt="Foto de {{ propiedad.direccion }}" loading="lazy">
+
+        {% if propiedad.destacado %}
+            <span class="etiqueta-destacada">Destacado</span>
+        {% endif %}
+
+        {% if propiedad.video_url %}
+            <span class="etiqueta-video">▶ Video</span>
+        {% endif %}
+
+        {% if propiedad.vendido %}
+            <span class="cinta-estado cinta-vendida">Vendida</span>
+        {% elif propiedad.reservado %}
+            <span class="cinta-estado cinta-reservada">Reservada</span>
+        {% endif %}
+
+        <button type="button" class="btn-guardar{% if propiedad.pk in dr_favoritos_ids %} guardado{% endif %}"
+                data-guardar="{{ propiedad.pk }}" aria-label="Guardar propiedad" aria-pressed="{% if propiedad.pk in dr_favoritos_ids %}true{% else %}false{% endif %}">
+            {% icono "corazon" %}
+        </button>
+
+        <span class="card-precio-tag">{{ propiedad.precio_formateado }}{% if propiedad.estado == 'Alquiler' %} <small>/ mes</small>{% endif %}</span>
+    </div>
+
+    <div class="card-detalles">
+        <h3 class="card-ubicacion">{{ propiedad.direccion }}</h3>
+
+        {% if propiedad.acepta_permuta or propiedad.apto_credito %}
+        <div class="chips-propiedad">
+            {% if propiedad.acepta_permuta %}<span class="chip-propiedad">{% icono "permuta" %} Acepta permuta</span>{% endif %}
+            {% if propiedad.apto_credito %}<span class="chip-propiedad">{% icono "credito" %} Apto crédito</span>{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="card-specs">
+            <span>{% icono "cama" %} {{ propiedad.dormitorios }}</span>
+            <span>{% icono "bano" %} {{ propiedad.banos }}</span>
+            {% if propiedad.ambientes %}<span>{% icono "ambientes" %} {{ propiedad.ambientes }} amb.</span>{% endif %}
+            <span>{% icono "area" %} {{ propiedad.metros_cuadrados }} m²</span>
+        </div>
+
+        <a href="{{ propiedad.get_absolute_url }}" class="btn-ver-mas">Ver Detalles</a>
+    </div>
+</article>

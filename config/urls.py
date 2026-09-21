@@ -9,11 +9,12 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 
-from propiedades.sitemaps import PropiedadSitemap, PaginasEstaticasSitemap
+from propiedades.sitemaps import PropiedadSitemap, PaginasEstaticasSitemap, ZonaSitemap
 
 sitemaps = {
     'propiedades': PropiedadSitemap,
     'paginas': PaginasEstaticasSitemap,
+    'zonas': ZonaSitemap,
 }
 
 urlpatterns = [
