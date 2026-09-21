@@ -28,7 +28,7 @@ class SolicitudTasacion(models.Model):
     OPCIONES_OBJETIVO = [
         ('vender', 'Quiero venderla'),
         ('alquilar', 'Quiero alquilarla'),
-        ('saber', 'Solo quiero saber cuánto vale'),
+        ('saber', 'Solo quiero saber su precio'),
     ]
 
     nombre = models.CharField(max_length=100, verbose_name="Nombre")
