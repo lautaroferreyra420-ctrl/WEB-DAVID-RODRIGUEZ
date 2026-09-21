@@ -197,7 +197,7 @@
 
                 <div class="propiedades-grid">
                     {% for propiedad in propiedades %}
-                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}{% if propiedad.vendido %} card-vendida{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
+                    <article class="propiedad-card {% if propiedad.destacado %}card-destacada{% endif %}{% if propiedad.vendido %} card-vendida{% elif propiedad.reservado %} card-reservada{% endif %}" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 60 %}"
                              {% if propiedad.video_url %}data-video-preview="{{ propiedad.video_url|preview_embed_url }}"{% endif %}>
 
                         <div class="card-imagen">

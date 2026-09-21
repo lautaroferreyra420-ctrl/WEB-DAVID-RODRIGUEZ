@@ -32,7 +32,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # Número de WhatsApp para el botón de contacto directo (formato: código de país + número, sin +, sin espacios)
-WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '5491100000000')
+WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '5491133405963')
 
 # Clave de la API de Gemini (Google AI), para generar descripciones de propiedades con IA
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')

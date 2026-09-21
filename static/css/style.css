@@ -1548,35 +1548,61 @@ main {
 /* ---------------------------------------------------------------- */
 /* ETIQUETAS DE PROPIEDAD: VENDIDA / RESERVADA (cinta) + CHIPS */
 /* ---------------------------------------------------------------- */
+/* Sello: un rótulo blanco con doble borde de color, ligeramente inclinado, que se "estampa"
+   sobre la foto. La foto se oscurece un poco para que el sello resalte. */
 .cinta-estado {
     position: absolute;
     top: 50%;
-    left: -10%;
-    width: 120%;
-    padding: 9px 0;
-    transform: translateY(-50%) rotate(-8deg);
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: var(--color-blanco);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    left: 50%;
     z-index: 3;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    padding: 8px 22px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 3px solid currentColor;
+    border-radius: 12px;
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
     pointer-events: none;
 }
 
 .cinta-vendida {
-    background: rgba(190, 0, 0, 0.94);
+    color: #c40000;
 }
 
 .cinta-reservada {
-    background: rgba(240, 168, 0, 0.96);
-    color: #1a1a1a;
+    color: #b87200;
 }
 
-.card-vendida .card-imagen img {
-    filter: grayscale(0.75) brightness(0.85);
+/* Foto oscurecida detrás del sello (más en vendidas, apenas en reservadas) */
+.card-vendida .card-imagen::before,
+.card-reservada .card-imagen::before,
+.galeria-vendida::after,
+.galeria-reservada::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.card-vendida .card-imagen::before,
+.galeria-vendida::after {
+    background: rgba(0, 0, 0, 0.42);
+}
+
+.card-reservada .card-imagen::before,
+.galeria-reservada::after {
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.card-vendida .card-imagen img,
+.galeria-vendida .imagen-principal {
+    filter: grayscale(0.75);
 }
 
 .detalle-galeria {
@@ -1584,10 +1610,47 @@ main {
     border-radius: 8px;
 }
 
+.detalle-galeria .detalle-etiqueta-destacada {
+    z-index: 2;
+}
+
 .detalle-galeria .cinta-estado {
-    font-size: 1.7rem;
-    padding: 14px 0;
-    letter-spacing: 10px;
+    font-size: 2.3rem;
+    padding: 12px 34px;
+    letter-spacing: 7px;
+    border-width: 4px;
+    outline-width: 3px;
+    outline-offset: 4px;
+}
+
+/* Entrada: el sello "cae" sobre la foto una sola vez, cuando la card aparece en pantalla */
+.aos-animate .cinta-estado {
+    animation: sello-entrada 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) 0.35s both;
+}
+
+@keyframes sello-entrada {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(-22deg) scale(1.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(-10deg) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aos-animate .cinta-estado {
+        animation: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .detalle-galeria .cinta-estado {
+        font-size: 1.4rem;
+        padding: 8px 20px;
+        letter-spacing: 4px;
+    }
 }
 
 .chips-propiedad {
@@ -1621,6 +1684,58 @@ main {
     vertical-align: middle;
 }
 
+/* Destello: una franja de luz roja cruza el chip, descansa unos segundos y vuelve a pasar.
+   AOS agrega la clase aos-animate cuando la card entra en pantalla, y ahí arranca el ciclo.
+   Ciclo total = 7s: ~1.1s de barrido + ~6s de pausa. Cada card tiene un desfase propio (--d)
+   para que no brillen todas a la vez. */
+.chip-propiedad {
+    position: relative;
+    overflow: hidden;
+}
+
+.chip-propiedad::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 55%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 40, 40, 0.38) 50%, transparent 100%);
+    transform: translateX(-130%) skewX(-20deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.aos-animate .chip-propiedad::after {
+    animation: destello-chip 7s ease-out var(--d, 0.7s) infinite both;
+}
+
+.aos-animate .chip-propiedad:nth-child(2)::after {
+    animation-delay: calc(var(--d, 0.7s) + 0.3s); /* el segundo chip va un momento después del primero */
+}
+
+.propiedades-grid .propiedad-card:nth-child(4n + 2) { --d: 2.4s; }
+.propiedades-grid .propiedad-card:nth-child(4n + 3) { --d: 4.1s; }
+.propiedades-grid .propiedad-card:nth-child(4n + 4) { --d: 5.8s; }
+
+/* Con el mouse encima de la card el destello se detiene, para no distraer */
+.propiedad-card:hover .chip-propiedad::after {
+    animation: none;
+    opacity: 0;
+}
+
+@keyframes destello-chip {
+    0% { transform: translateX(-130%) skewX(-20deg); opacity: 1; }
+    16% { transform: translateX(300%) skewX(-20deg); opacity: 1; }
+    16.1%, 100% { transform: translateX(300%) skewX(-20deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aos-animate .chip-propiedad::after {
+        animation: none;
+    }
+}
+
 /* ---------------------------------------------------------------- */
 /* PÁGINA NOSOTROS */
 /* ---------------------------------------------------------------- */
@@ -1642,7 +1757,7 @@ main {
 }
 
 .nosotros-pilares {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .servicios-grid {
