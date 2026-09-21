@@ -212,33 +212,68 @@ body.dr-modal-abierto { overflow: hidden; }
 
 .btn-guardar-detalle:hover { transform: translateY(-1px); }
 
-/* Alerta de búsqueda, junto al título de resultados */
-.resultados-encabezado {
+/* Tarjeta "Avisame cuando entre": al final de los resultados, con la búsqueda escrita */
+.alerta-card {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px 16px;
+    gap: 18px;
+    margin: 28px 0 0;
+    padding: 20px 24px;
+    background: var(--color-blanco);
+    color: var(--color-negro);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 18px 36px -10px rgba(0, 0, 0, 0.35);
 }
 
-.btn-alerta {
-    display: inline-flex;
+.alerta-card-icono {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff0f0;
+    color: var(--color-rojo-acento);
+    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 16px;
-    border: 1.5px solid var(--color-negro);
+    justify-content: center;
+}
+
+.alerta-card-icono .icono-svg { width: 24px; height: 24px; margin: 0; }
+.alerta-card-texto { flex: 1; min-width: 0; }
+.alerta-card-texto h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.alerta-card-texto p { margin: 0 0 8px; font-size: 0.88rem; color: #555; line-height: 1.45; }
+
+.alerta-card-busqueda {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #f3f3f5;
+    border: 1px solid #e4e4e8;
     border-radius: 999px;
-    background: transparent;
-    color: var(--color-negro);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.alerta-card-boton {
+    flex: none;
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--color-negro);
+    color: var(--color-blanco);
     font-family: inherit;
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.btn-alerta:hover { background: var(--color-negro); color: var(--color-blanco); }
-.btn-alerta .icono-svg { margin: 0; width: 16px; height: 16px; }
+.alerta-card-boton:hover { background: var(--color-rojo-acento); transform: translateY(-1px); }
+
+@media (max-width: 700px) {
+    .alerta-card { flex-direction: column; text-align: center; padding: 22px 18px; }
+    .alerta-card-boton { width: 100%; }
+}
 
 /* ---------------- Páginas legales ---------------- */
 .pagina-legal {

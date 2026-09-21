@@ -1,3 +1,5 @@
+import json
+import json
 import logging
 
 from django.core.mail import send_mail
@@ -8,7 +10,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Propiedad, ConfiguracionSitio
 from .forms import ContactoForm, ConsultaPropiedadForm
-from .seguimiento import registrar_consulta_como_interesado, registrar_visita
+from .seguimiento import (
+    FILTROS_PERMITIDOS, describir_filtros, limpiar_filtros,
+    registrar_consulta_como_interesado, registrar_visita,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +103,16 @@ def lista_propiedades(request):
     filtros_querystring = request.GET.copy()
     filtros_querystring.pop('page', None)
 
+    # La búsqueda que se está viendo, para ofrecer "avisame cuando entre algo así".
+    # Solo tiene sentido si la persona filtró algo (además de la operación) o si no hubo resultados.
+    filtros_alerta = limpiar_filtros(request.GET.dict())
+    hay_filtros_propios = any(clave != 'estado' for clave in filtros_alerta)
+
+    # La búsqueda que se está viendo, para ofrecer "avisame cuando entre algo así".
+    # Solo tiene sentido si la persona filtró algo (además de la operación) o si no hubo resultados.
+    filtros_alerta = limpiar_filtros(request.GET.dict())
+    hay_filtros_propios = any(clave != 'estado' for clave in filtros_alerta)
+
     # 4. Creamos el "contexto", que es un diccionario para pasarle datos a la plantilla.
     context = {
         'propiedades': pagina,  # La página actual de resultados
@@ -106,6 +121,9 @@ def lista_propiedades(request):
         'titulo_seo': titulo_seo,  # Pasamos nuestro nuevo título SEO a la plantilla
         'filtros_querystring': filtros_querystring.urlencode(),
         'estadisticas_sitio': ConfiguracionSitio.obtener().estadisticas(),
+        'mostrar_alerta': bool(filtros_alerta) and (hay_filtros_propios or total_propiedades == 0),
+        'filtros_alerta_json': json.dumps(filtros_alerta),
+        'descripcion_alerta': describir_filtros(filtros_alerta),
     }
     # 5. Renderizamos (dibujamos) la plantilla HTML con los datos del contexto.
     return render(request, 'propiedades/lista_propiedades.html', context)

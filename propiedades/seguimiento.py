@@ -141,6 +141,14 @@ def limpiar_filtros(crudos):
     return limpios
 
 
+def _miles(valor):
+    """'300000' -> '300.000' (si no es un número, se deja como vino)."""
+    try:
+        return f"{int(valor):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return str(valor)
+
+
 def describir_filtros(filtros):
     """Texto legible de una búsqueda guardada. Ej: 'Casa en Venta · Castelar · hasta USD 300000'."""
     tipos = dict(Propiedad.OPCIONES_TIPO)
@@ -155,11 +163,11 @@ def describir_filtros(filtros):
         partes.append(filtros['ubicacion_texto'])
     moneda = '$' if filtros.get('estado') == 'Alquiler' else 'USD'
     if filtros.get('precio_min') and filtros.get('precio_max'):
-        partes.append(f"{moneda} {filtros['precio_min']} a {filtros['precio_max']}")
+        partes.append(f"{moneda} {_miles(filtros['precio_min'])} a {_miles(filtros['precio_max'])}")
     elif filtros.get('precio_max'):
-        partes.append(f"hasta {moneda} {filtros['precio_max']}")
+        partes.append(f"hasta {moneda} {_miles(filtros['precio_max'])}")
     elif filtros.get('precio_min'):
-        partes.append(f"desde {moneda} {filtros['precio_min']}")
+        partes.append(f"desde {moneda} {_miles(filtros['precio_min'])}")
     if filtros.get('ambientes_min'):
         partes.append(f"{filtros['ambientes_min']}+ ambientes")
     if filtros.get('metros_cuadrados_min'):

@@ -191,13 +191,8 @@
         <div class="main-container">
             <main id="area-resultados">
                 <div class="resultados-encabezado">
-                    <div>
                     <h2>{{ titulo_seo }}</h2>
                     <p class="conteo-resultados">Encontramos <strong>{{ total_propiedades }}</strong> inmueble{{ total_propiedades|pluralize }} disponible{{ total_propiedades|pluralize }}.</p>
-                    </div>
-                    <button type="button" class="btn-alerta" data-alerta>
-                        {% icono "campana" %} Avisame de propiedades como estas
-                    </button>
                 </div>
 
                 <div class="propiedades-grid">
@@ -269,6 +264,23 @@
                     {% endif %}
                 </nav>
                 {% endif %}
+
+
+                {% if mostrar_alerta %}
+                <section class="alerta-card" data-aos="fade-up">
+                    <span class="alerta-card-icono">{% icono "campana" %}</span>
+                    <div class="alerta-card-texto">
+                        <h3>{% if total_propiedades == 0 %}Todavía no tenemos una propiedad así{% else %}¿No es exactamente lo que buscás?{% endif %}</h3>
+                        <p>Te avisamos por email o WhatsApp cuando entre una propiedad nueva para esta búsqueda:</p>
+                        <span class="alerta-card-busqueda">{{ descripcion_alerta }}</span>
+                    </div>
+                    <button type="button" class="alerta-card-boton" data-alerta
+                            data-filtros="{{ filtros_alerta_json }}" data-resumen="{{ descripcion_alerta }}">
+                        Avisame cuando entre
+                    </button>
+                </section>
+                {% endif %}
+
 
             </main>
 

@@ -74,8 +74,8 @@
             icono: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
         },
         alerta: {
-            titulo: 'Recibí propiedades como estas',
-            texto: 'Te avisamos por email o WhatsApp cuando entre algo que coincida con tu búsqueda.',
+            titulo: 'Te avisamos cuando entre algo así',
+            texto: 'Dejanos tu contacto y te escribimos apenas entre una propiedad nueva para esta búsqueda:',
             boton: 'Avisarme',
             icono: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
         },
@@ -215,9 +215,10 @@
         const partes = [(tipos[f.tipo_propiedad] || 'Propiedades') + (f.estado ? ' en ' + f.estado : '')];
         if (f.ubicacion_texto) partes.push(f.ubicacion_texto);
         const moneda = f.estado === 'Alquiler' ? '$' : 'USD';
-        if (f.precio_min && f.precio_max) partes.push(moneda + ' ' + f.precio_min + ' a ' + f.precio_max);
-        else if (f.precio_max) partes.push('hasta ' + moneda + ' ' + f.precio_max);
-        else if (f.precio_min) partes.push('desde ' + moneda + ' ' + f.precio_min);
+        const miles = function (v) { const n = parseInt(v, 10); return isNaN(n) ? v : n.toLocaleString('es-AR'); };
+        if (f.precio_min && f.precio_max) partes.push(moneda + ' ' + miles(f.precio_min) + ' a ' + miles(f.precio_max));
+        else if (f.precio_max) partes.push('hasta ' + moneda + ' ' + miles(f.precio_max));
+        else if (f.precio_min) partes.push('desde ' + moneda + ' ' + miles(f.precio_min));
         if (f.ambientes_min) partes.push(f.ambientes_min + '+ ambientes');
         if (f.metros_cuadrados_min) partes.push(f.metros_cuadrados_min + '+ m²');
         return partes.join(' · ');
@@ -227,8 +228,10 @@
         const boton = e.target.closest('[data-alerta]');
         if (!boton) return;
         e.preventDefault();
-        const filtros = filtrosDelFormulario();
-        abrirModal({ tipo: 'alerta', filtros: filtros, resumen: resumenFiltros(filtros) });
+        let filtros;
+        try { filtros = JSON.parse(boton.dataset.filtros || ''); } catch (err) { filtros = null; }
+        if (!filtros || !Object.keys(filtros).length) filtros = filtrosDelFormulario();
+        abrirModal({ tipo: 'alerta', filtros: filtros, resumen: boton.dataset.resumen || resumenFiltros(filtros) });
     });
 
     // ---------------------------------------------------------------- recorrido local y ventana de novedades
