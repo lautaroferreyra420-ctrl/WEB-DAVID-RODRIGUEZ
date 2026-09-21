@@ -11,7 +11,7 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="{% static_v 'css/style.css' %}">
     <link rel="stylesheet" href="{% static_v 'css/interesados.css' %}">
-    <link rel="icon" href="{% static 'img/Logo.png' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}">
     <title>{% block title %}Sitio Web David Rodriguez Inmobiliaria{% endblock %}</title>
 
     <link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
@@ -27,7 +27,7 @@
     <meta property="og:site_name" content="David Rodriguez Propiedades">
     <meta property="og:title" content="David Rodriguez Propiedades">
     <meta property="og:description" content="Compra, venta y alquiler de casas, departamentos y locales.">
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/Logo.png' %}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     {% endblock %}
 
@@ -50,7 +50,7 @@
 
     <header id="header-principal">
         <a href="{% url 'inicio' %}" class="header-logo-link">
-            <img src="{% static 'img/Logo.png' %}" alt="David Rodriguez Inmobiliaria" class="header-banner">
+            <img src="{% static 'img/logo.png' %}" alt="David Rodriguez Inmobiliaria" class="header-banner">
         </a>
         <!-- 2. Contenido principal de la página -->
         <div class="main-nav-container">
@@ -75,7 +75,7 @@
     <footer class="pie-pagina">
         <div class="pie-contenido">
             <div class="pie-marca">
-                <img src="{% static 'img/Logo.png' %}" alt="David Rodriguez Propiedades" class="pie-logo">
+                <img src="{% static 'img/logo.png' %}" alt="David Rodriguez Propiedades" class="pie-logo">
                 <p>Especialistas en asesoramiento inmobiliario en zona oeste.</p>
             </div>
 

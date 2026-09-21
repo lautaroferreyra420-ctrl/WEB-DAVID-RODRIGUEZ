@@ -19,6 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
+# Carpeta con los datos que NO son código: base de datos, fotos subidas y archivos estáticos recopilados.
+# En tu computadora es la misma carpeta del proyecto; en el servidor se define con DATA_DIR para que
+# actualizar el código nunca toque los datos.
+DATA_DIR = Path(os.getenv('DATA_DIR', BASE_DIR))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -27,9 +32,21 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dr@^h@$x^yln5%+w19bv1yk%kha3dg!d@8t%a#&&5igx+x5$$l')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'   # por defecto apagado: hay que prenderlo a propósito en desarrollo
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
+    from django.core.exceptions import ImproperlyConfigured
+    raise ImproperlyConfigured('Con DEBUG apagado hace falta definir una SECRET_KEY propia en el archivo .env')
+
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
+
+# Detrás de nginx: se confía en el aviso de nginx de que el pedido original era HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Con HTTPS activo (USAR_HTTPS=True) las cookies solo viajan cifradas
+if os.getenv('USAR_HTTPS', 'False') == 'True':
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Número de WhatsApp para el botón de contacto directo (formato: código de país + número, sin +, sin espacios)
 WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '5491133405963')
@@ -91,7 +108,7 @@ WSGI_APPLICATION = 'config.wsgi.application' # Añadido por si acaso falta
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DATA_DIR / 'db.sqlite3',
     }
 }
 
@@ -138,7 +155,10 @@ STATICFILES_DIRS = [
 
 # Archivos subidos por los usuarios (fotos de propiedades)
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = DATA_DIR / 'media'
+
+# Donde `collectstatic` junta los archivos estáticos para que nginx los sirva en producción
+STATIC_ROOT = DATA_DIR / 'staticfiles'
 
 
 # Default primary key field type
